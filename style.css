@@ -71,14 +71,21 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: 'Comic Code', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   margin: 0;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem;
   background: linear-gradient(135deg, var(--base) 0%, var(--mantle) 60%, var(--crust) 100%);
   color: var(--text);
 }
@@ -109,7 +116,7 @@ body {
 }
 
 .pronouns {
-    margin: 0.35rem 0 0;
+  margin: 0.35rem 0 0;
   color: var(--mauve);
   font-size: 0.95rem;
   letter-spacing: 0.04em;
@@ -151,14 +158,18 @@ body {
   height: 30px;
   flex-shrink: 0;
   filter: invert(86%) sepia(8%) saturate(900%) hue-rotate(190deg) brightness(105%);
+  transition: filter 0.15s ease;
 }
 
 .link-card:hover .icon {
   filter: invert(78%) sepia(36%) saturate(640%) hue-rotate(280deg) brightness(105%);
 }
 
-/* Keep multicolor icons (e.g. git.gay) at their true colors */
-.icon.raw,
+/* git.gay: white by default, true pride colors on hover */
+.icon.raw {
+  filter: brightness(0) invert(1);
+}
+
 .link-card:hover .icon.raw {
   filter: none;
 }
@@ -216,4 +227,64 @@ body {
 
 .link-card.arch .link-title {
   color: var(--pink);
+}
+
+/* Cosmetic system badges, pinned bottom-right */
+.badges {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: var(--surface-0);
+  border: 1px solid var(--surface-1);
+  color: var(--subtext-1);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.badge-icon {
+  width: 15px;
+  height: 15px;
+  filter: invert(78%) sepia(36%) saturate(640%) hue-rotate(280deg) brightness(105%);
+}
+
+/* Shrink to fit narrow / short screens so the hub never scrolls */
+@media (max-width: 420px),
+(max-height: 640px) {
+  .hub-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .hub-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .links {
+    grid-template-columns: repeat(auto-fit, 60px);
+    gap: 0.6rem;
+  }
+
+  .link-card {
+    width: 60px;
+    height: 60px;
+    border-radius: 13px;
+  }
+
+  .icon {
+    width: 26px;
+    height: 26px;
+  }
 }
