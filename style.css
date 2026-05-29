@@ -1,30 +1,213 @@
+/* Comic Code Import*/
+@font-face {
+  font-family: 'Comic Code';
+  src: url('https://fonts.doughmination.co.uk/ComicCode-Regular_2022-05-24-151938_hsmz.woff2') format('woff2'),
+    url('https://fonts.doughmination.co.uk/ComicCode-Regular_2022-05-24-151938_hsmz.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Comic Code';
+  src: url('https://fonts.doughmination.co.uk/ComicCode-Italic_2022-05-24-151939_rdtu.woff2') format('woff2'),
+    url('https://fonts.doughmination.co.uk/ComicCode-Italic_2022-05-24-151939_rdtu.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Comic Code';
+  src: url('https://fonts.doughmination.co.uk/ComicCode-Medium_2022-05-24-151941_ugqm.woff2') format('woff2'),
+    url('https://fonts.doughmination.co.uk/ComicCode-Medium_2022-05-24-151941_ugqm.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Comic Code';
+  src: url('https://fonts.doughmination.co.uk/ComicCode-Bold_2022-05-24-152309_zqkm.woff2') format('woff2'),
+    url('https://fonts.doughmination.co.uk/ComicCode-Bold_2022-05-24-152309_zqkm.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+:root {
+  /* https://catppuccin.com/palette/ */
+  /* Catppuccin Mocha */
+  /* accents */
+  --rosewater: #f5e0dc;
+  --flamingo: #f2cdcd;
+  --pink: #f5c2e7;
+  --mauve: #cba6f7;
+  --red: #f38ba8;
+  --maroon: #eba0ac;
+  --peach: #fab387;
+  --yellow: #f9e2af;
+  --green: #a6e3a1;
+  --teal: #94e2d5;
+  --sky: #89dceb;
+  --saphire: #74c7ec;
+  --blue: #89b4fa;
+  /* a lovely new blue passport */
+  --lavender: #b4befe;
+  /* Text */
+  --text: #cdd6f4;
+  --subtext-0: #a6adc8;
+  --subtext-1: #bac2de;
+  --overlay-0: #6c7086;
+  --overlay-1: #7f849c;
+  --overlay-2: #9399b2;
+  --surface-0: #313244;
+  --surface-1: #45475a;
+  --surface-2: #585b70;
+  /* Backgrounds */
+  --base: #1e1e2e;
+  --mantle: #181825;
+  --crust: #11111b;
+  /* Is this the crusty crab? */
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  font-family: 'Comic Code', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, var(--base) 0%, var(--mantle) 60%, var(--crust) 100%);
+  color: var(--text);
 }
-.container {
+
+.hub {
+  width: 100%;
+  max-width: 460px;
+}
+
+.hub-header {
   text-align: center;
+  margin-bottom: 2.25rem;
 }
-.spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
+
+.hub-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--pink);
 }
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+
+.tagline {
+  margin: 0.35rem 0 0;
+  color: var(--subtext-0);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
-a {
-  color: white;
-  text-decoration: underline;
+
+.pronouns {
+    margin: 0.35rem 0 0;
+  color: var(--mauve);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+
+.links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 72px);
+  gap: 0.9rem;
+  justify-content: center;
+}
+
+.link-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  background: var(--surface-0);
+  border: 1px solid var(--surface-1);
+  color: var(--text);
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.link-card:hover {
+  transform: translateY(-3px);
+  background: var(--surface-1);
+  border-color: var(--pink);
+  box-shadow: 0 6px 20px rgba(245, 194, 231, 0.22);
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  filter: invert(86%) sepia(8%) saturate(900%) hue-rotate(190deg) brightness(105%);
+}
+
+.link-card:hover .icon {
+  filter: invert(78%) sepia(36%) saturate(640%) hue-rotate(280deg) brightness(105%);
+}
+
+/* Details revealed on hover as a tooltip */
+.link-text {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  background: var(--crust);
+  border: 1px solid var(--pink);
+  box-shadow: 0 6px 18px rgba(17, 17, 27, 0.55);
+  white-space: nowrap;
+  line-height: 1.3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+}
+
+/* Tooltip arrow */
+.link-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--pink);
+}
+
+.link-card:hover .link-text,
+.link-card:focus-visible .link-text {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.link-title {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.link-sub {
+  font-size: 0.78rem;
+  color: var(--subtext-0);
+}
+
+.link-card.arch .link-title {
+  color: var(--pink);
 }
