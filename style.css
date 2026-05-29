@@ -90,9 +90,33 @@ body {
   color: var(--text);
 }
 
+/* Estrogen watermark blended into the background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url(/svg/estrogen.svg) center / cover no-repeat;
+  filter: invert(86%) sepia(8%) saturate(900%) hue-rotate(190deg) brightness(105%);
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .hub {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 460px;
+}
+
+.pfp {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--yellow);
+  box-shadow: 0 4px 18px rgba(245, 194, 231, 0.25);
+  margin-bottom: 0.75rem;
 }
 
 .hub-header {
@@ -270,6 +294,12 @@ body {
 
   .hub-header h1 {
     font-size: 1.6rem;
+  }
+
+  .pfp {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 0.5rem;
   }
 
   .links {
