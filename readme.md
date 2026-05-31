@@ -1,12 +1,10 @@
 <div align="center">
 <img src="https://clove.is-a.dev/images/avatar.png" alt="Clove Twilight avatar" height="100">
 
-# clove.is-a.dev
+# doughmination.is-a.dev
 </div>
 
-<a href="clove.is-a.dev">clove.is-a.dev</a> is the homepage and center for all of Clove's projects.
-
-I made this cause I kept losing track of everything, and yeah...
+<a href="doughmination.is-a.dev">doughmination.is-a.dev</a> is the beta homepage for <a href="clove.is-a.dev">clove.is-a.dev</a>. I originallly snatched it up to stop users impersonating my brand/product.
 
 ## License
 
