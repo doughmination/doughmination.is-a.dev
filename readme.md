@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://clove.is-a.dev/images/avatar.png" alt="Clove Twilight avatar" height="100">
+<img src="https://doughmination.is-a.dev/images/avatar.png" alt="Clove Twilight avatar" height="100">
 
 # doughmination.is-a.dev
 </div>
