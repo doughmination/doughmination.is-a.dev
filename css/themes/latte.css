@@ -5,22 +5,22 @@ html[data-flavor="latte"] {
 
   /* accents */
   --rosewater: #dc8a78;
-  --flamingo:  #dd7878;
-  --pink:      #ea76cb;
-  --mauve:     #8839ef;
-  --red:       #d20f39;
-  --maroon:    #e64553;
-  --peach:     #fe640b;
-  --yellow:    #df8e1d;
-  --green:     #40a02b;
-  --teal:      #179299;
-  --sky:       #04a5e5;
-  --saphire:   #209fb5;
-  --blue:      #1e66f5;
-  --lavender:  #7287fd;
+  --flamingo: #dd7878;
+  --pink: #ea76cb;
+  --mauve: #8839ef;
+  --red: #d20f39;
+  --maroon: #e64553;
+  --peach: #fe640b;
+  --yellow: #df8e1d;
+  --green: #40a02b;
+  --teal: #179299;
+  --sky: #04a5e5;
+  --saphire: #209fb5;
+  --blue: #1e66f5;
+  --lavender: #7287fd;
 
   /* text */
-  --text:      #4c4f69;
+  --text: #4c4f69;
   --subtext-1: #5c5f77;
   --subtext-0: #6c6f85;
   --overlay-2: #7c7f93;
@@ -31,13 +31,29 @@ html[data-flavor="latte"] {
   --surface-2: #acb0be;
   --surface-1: #bcc0cc;
   --surface-0: #ccd0da;
-  --base:      #eff1f5;
-  --mantle:    #e6e9ef;
-  --crust:     #dce0e8;
+  --base: #eff1f5;
+  --mantle: #e6e9ef;
+  --crust: #dce0e8;
 }
 
 /* Light-mode readability fixes (icons are white-filtered by default) */
-html[data-flavor="latte"] .icon { filter: brightness(0); }
-html[data-flavor="latte"] .link-card:hover .icon { filter: none; }
-html[data-flavor="latte"] .badge-icon { filter: none; }
-html[data-flavor="latte"] body::before { background: url(/images/theme/estrogen.svg) center / cover no-repeat invert(1); }
+html[data-flavor="latte"] .icon {
+  filter: brightness(0);
+}
+
+html[data-flavor="latte"] .link-card:hover .icon {
+  filter: none;
+}
+
+html[data-flavor="latte"] .badge-icon {
+  filter: none;
+}
+
+html[data-flavor="latte"] body::before {
+  filter: invert(14%),
+    sepia(0.2),
+    saturate(300%),
+    hue-rotate(200deg),
+    brightness(1.3);
+  opacity: 0.05;
+}

@@ -769,3 +769,94 @@ body:has(.changelog) .hub {
   height: 22px;
   display: block;
 }
+
+/* ============================================================
+   Mobile layout — Link Center only
+   On phones the four fixed corner widgets (now-playing, theme
+   toggle, page nav, system badges) overlap the centered hub.
+   Un-pin them into normal document flow and let the page scroll.
+   Scoped with :not(:has()) so tech-stack / changelog keep their
+   own scroll handling untouched.
+   ============================================================ */
+@media (max-width: 640px) {
+
+  body:not(:has(.tech-stack)):not(:has(.changelog)) {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+    padding: 1.25rem 1rem 1.5rem;
+  }
+
+  html:has(.links):not(:has(.tech-stack)):not(:has(.changelog)) {
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Un-pin every corner widget and place it in flow */
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .now-playing,
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav,
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .badges,
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .beta-bar {
+    position: static;
+    inset: auto;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+  }
+
+  /* Top row: theme toggle first, then now-playing */
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .beta-bar {
+    order: 1;
+    align-self: center;
+  }
+
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .now-playing {
+    order: 2;
+    max-width: 100%;
+  }
+
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .hub {
+    order: 3;
+    max-width: 100%;
+  }
+
+  /* Page nav below the links, laid out as a centered row */
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav {
+    order: 4;
+  }
+
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  /* The selected-item pointer triangle / offset is only meaningful
+     in the vertical desktop nav — drop it on mobile */
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav-link.selected {
+    margin-left: 0;
+  }
+
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav-link.selected::before {
+    display: none;
+  }
+
+  /* Badges last, centered and wrapping */
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .badges {
+    order: 5;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  body:not(:has(.tech-stack)):not(:has(.changelog)) .hub-header {
+    margin-bottom: 1.5rem;
+  }
+}
