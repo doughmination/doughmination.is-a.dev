@@ -50,10 +50,6 @@ html[data-flavor="latte"] .badge-icon {
 }
 
 html[data-flavor="latte"] body::before {
-  filter: invert(14%),
-    sepia(0.2),
-    saturate(300%),
-    hue-rotate(200deg),
-    brightness(1.3);
+  filter: invert(14%) sepia(0.2) saturate(300%) hue-rotate(200deg) brightness(1.3);
   opacity: 0.05;
 }

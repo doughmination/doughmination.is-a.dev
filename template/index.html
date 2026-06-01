@@ -6,7 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clove Twilight - Template</title>
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/themes/mocha.css">
+    <link rel="stylesheet" href="/css/themes/macchiato.css">
+    <link rel="stylesheet" href="/css/themes/frappe.css">
+    <link rel="stylesheet" href="/css/themes/latte.css">
+    <script>try{var f=localStorage.getItem('ctpFlavor');document.documentElement.setAttribute('data-flavor',['mocha','macchiato','frappe','latte'].indexOf(f)>=0?f:'mocha');}catch(e){document.documentElement.setAttribute('data-flavor','mocha');}</script>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="Template Page for Clove Twilight" />
@@ -43,12 +48,24 @@
 
     <header class="nav">
         <nav class="nav-links">
+            <a class="nav-link" data-href="/">Link Center</a>
             <a class="nav-link selected" data-href="/template">Template</a>
         </nav>
     </header>
+
+    <a class="now-playing" id="now-playing" target="_blank" rel="noopener" hidden>
+        <img class="np-art" alt="" referrerpolicy="no-referrer">
+        <span class="np-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="np-text">
+            <span class="np-label">Now playing</span>
+            <span class="np-track"></span>
+            <span class="np-artist"></span>
+        </span>
+    </a>
+
     <main class="hub">
         <header class="hub-header">
-            <img class="pfp" src="/images/avatar.png" alt="Clove Twilight avatar">
+            <img class="pfp" src="/images/favicon/avatar.png" alt="Clove Twilight avatar">
             <h1>Clove Twilight</h1>
             <h2 class="pronouns">(fae/faer)</h2>
             <p class="tagline">Template</p>
@@ -61,25 +78,27 @@
 
     <aside class="badges" aria-label="System badges">
         <span class="badge">
-            <img class="badge-icon" src="/images/amd.svg" alt="">
+            <img class="badge-icon" src="/images/misc/amd.svg" alt="">
             AMD Purist
         </span>
         <span class="badge">
-            <img class="badge-icon" src="/images/arch.svg" alt="">
+            <img class="badge-icon" src="/images/misc/arch.svg" alt="">
             I use arch btw
         </span>
         <span class="badge">
-            <img class="badge-icon" src="/images/debian.svg" alt="">
+            <img class="badge-icon" src="/images/misc/debian.svg" alt="">
             Debian Professional
         </span>
         <span class="badge">
-            <img class="badge-icon" src="/images/apple.svg" alt="">
+            <img class="badge-icon" src="/images/misc/apple.svg" alt="">
             Apple Ecosystem Enthusiast
         </span>
     </aside>
 
-    <script src="/js/cat.js" data-cat="/images/oneko.gif"></script>
+    <script src="/js/cat.js" data-cat="/images/misc/oneko.gif"></script>
     <script src="/js/nav.js"></script>
+    <script src="/js/now-playing.js"></script>
+    <script src="/js/flavors.js"></script>
 </body>
 
 </html>

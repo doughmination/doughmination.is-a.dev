@@ -29,7 +29,18 @@
     <button class="beta-btn" id="flavor-btn" type="button">
       <img class="beta-icon" alt="">
     </button>`;
-  document.body.appendChild(bar);
+  // Group the single-item widgets (now-playing + theme toggle) into one
+  // top bar. On mobile they sit side by side; on desktop both stay
+  // position:fixed, so this wrapper is zero-size and invisible.
+  let topbar = document.querySelector(".topbar");
+  if (!topbar) {
+    topbar = document.createElement("div");
+    topbar.className = "topbar";
+    document.body.insertBefore(topbar, document.body.firstChild);
+    const np = document.getElementById("now-playing");
+    if (np) topbar.appendChild(np);
+  }
+  topbar.appendChild(bar);
 
   const btn = bar.querySelector("#flavor-btn");
   const icon = bar.querySelector(".beta-icon");

@@ -60,6 +60,14 @@ body {
   overflow: hidden;
 }
 
+/* Gradient lives on <html> too, so it propagates to the page canvas.
+   On mobile (scrolling, URL-bar resize, overscroll) the area outside
+   the body would otherwise expose the root canvas — white in the light
+   (latte) theme. Painting <html> keeps every theme's background filled. */
+html {
+  background: linear-gradient(135deg, var(--base) 0%, var(--mantle) 60%, var(--crust) 100%);
+}
+
 body {
   font-family: 'Comic Code', sans-serif;
   display: flex;
@@ -771,16 +779,18 @@ body:has(.changelog) .hub {
 }
 
 /* ============================================================
-   Mobile layout — Link Center only
-   On phones the four fixed corner widgets (now-playing, theme
-   toggle, page nav, system badges) overlap the centered hub.
-   Un-pin them into normal document flow and let the page scroll.
-   Scoped with :not(:has()) so tech-stack / changelog keep their
-   own scroll handling untouched.
+   Mobile layout
    ============================================================ */
 @media (max-width: 640px) {
 
-  body:not(:has(.tech-stack)):not(:has(.changelog)) {
+  html {
+    height: auto;
+    overflow: visible;
+  }
+
+  body,
+  body:has(.tech-stack),
+  body:has(.changelog) {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
@@ -788,75 +798,85 @@ body:has(.changelog) .hub {
     height: auto;
     min-height: 100dvh;
     overflow-y: auto;
-    padding: 1.25rem 1rem 1.5rem;
+    padding: 1.25rem 1rem 2rem;
   }
 
-  html:has(.links):not(:has(.tech-stack)):not(:has(.changelog)) {
-    height: auto;
-    overflow: visible;
+  /* 1 — Top bar: the two single-item widgets, side by side */
+  .topbar {
+    order: 1;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
   }
 
-  /* Un-pin every corner widget and place it in flow */
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .now-playing,
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav,
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .badges,
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .beta-bar {
+  .topbar .now-playing,
+  .topbar .beta-bar {
     position: static;
     inset: auto;
-    top: auto;
-    left: auto;
-    right: auto;
-    bottom: auto;
   }
 
-  /* Top row: theme toggle first, then now-playing */
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .beta-bar {
-    order: 1;
-    align-self: center;
+  .now-playing {
+    max-width: 100%;
   }
 
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .now-playing {
+  /* 2 — Main content */
+  .hub,
+  body:has(.tech-stack) .hub,
+  body:has(.changelog) .hub {
     order: 2;
+    width: 100%;
     max-width: 100%;
   }
 
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .hub {
+  /* 3 — Page nav as a centered group */
+  .nav {
     order: 3;
-    max-width: 100%;
+    position: static;
+    inset: auto;
+    width: 100%;
   }
 
-  /* Page nav below the links, laid out as a centered row */
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav {
-    order: 4;
-  }
-
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav-links {
+  .nav-links {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.5rem;
   }
 
-  /* The selected-item pointer triangle / offset is only meaningful
-     in the vertical desktop nav — drop it on mobile */
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav-link.selected {
+  /* The selected-item pointer triangle / offset only makes sense in
+     the vertical desktop nav — drop it on mobile */
+  .nav-link.selected {
     margin-left: 0;
   }
 
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .nav-link.selected::before {
+  .nav-link.selected::before {
     display: none;
   }
 
-  /* Badges last, centered and wrapping */
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .badges {
-    order: 5;
+  /* 4 — System badges, centered and wrapping */
+  .badges {
+    order: 4;
+    position: static;
+    inset: auto;
+    width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
   }
 
-  body:not(:has(.tech-stack)):not(:has(.changelog)) .hub-header {
+  .hub-header {
     margin-bottom: 1.5rem;
+  }
+
+  /* Keep the tech-stack / changelog content from butting up against
+     the nav below it */
+  .tech-stack,
+  .changelog {
+    padding-bottom: 0;
   }
 }
