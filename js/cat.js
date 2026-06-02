@@ -293,7 +293,7 @@ const CAT_MODES = [
   { name: "Dusty Cat", filter: "invert(60%)" },
 ];
 const UNLOCK_EVERY = 5; // clicks needed to unlock each new mode
-const SPRITE = "/images/misc/oneko.gif";
+const SPRITE = "/assets/misc/oneko.gif";
 const IDLE_POS = "-96px -96px"; // idle frame of the sprite sheet
 
 (function catModes() {

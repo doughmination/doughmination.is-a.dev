@@ -1,17 +1,7 @@
-/* Cross-site switcher — a single dropdown that links the sister sites:
- *   clove.is-a.dev · doughmination.is-a.dev · lumine.is-a.dev
- *
- * Self-contained: injects its own CSS + markup and slots itself into the
- * existing bottom-left page nav (.nav-links). Drop one script tag on any
- * page that has the nav and it just works. The current site is detected
- * from the hostname and marked, and the redundant single "is-a-dev" pill
- * (if present) is removed so we don't double up on cross-site links.
- */
 (function siteSwitcher() {
   var SITES = [
     { id: "clove", label: "clove.is-a.dev", url: "https://clove.is-a.dev", note: "Link Center" },
     { id: "doughmination", label: "doughmination.is-a.dev", url: "https://doughmination.is-a.dev", note: "Beta Link Center" },
-    { id: "lumine", label: "lumine.is-a.dev", url: "https://lumine.is-a.dev", note: "Discord Bots" },
   ];
 
   var host = (location.hostname || "").replace(/^www\./, "");
@@ -20,7 +10,6 @@
     if (host === SITES[i].url.replace("https://", "")) currentId = SITES[i].id;
   }
 
-  // ---- styles -------------------------------------------------------------
   var css = `
   .site-switcher { position: relative; }
   .site-switcher-btn {

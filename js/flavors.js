@@ -47,7 +47,7 @@
 
   function paintBtn() {
     const f = FLAVORS[current];
-    icon.src = `/images/theme/${current}.png`;   // e.g. /images/theme/mocha.png
+    icon.src = `/assets/theme/${current}.png`;   // e.g. /assets/theme/mocha.png
     icon.alt = f.label;
     btn.title = `Theme: ${f.label} (click to cycle)`;
   }

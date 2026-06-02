@@ -1,35 +1,4 @@
-/* Comic Code Import*/
-@font-face {
-  font-family: 'Comic Code';
-  src: url('https://fonts.doughmination.co.uk/ComicCode-Regular_2022-05-24-151938_hsmz.woff2') format('woff2'),
-    url('https://fonts.doughmination.co.uk/ComicCode-Regular_2022-05-24-151938_hsmz.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Comic Code';
-  src: url('https://fonts.doughmination.co.uk/ComicCode-Italic_2022-05-24-151939_rdtu.woff2') format('woff2'),
-    url('https://fonts.doughmination.co.uk/ComicCode-Italic_2022-05-24-151939_rdtu.woff') format('woff');
-  font-weight: 400;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'Comic Code';
-  src: url('https://fonts.doughmination.co.uk/ComicCode-Medium_2022-05-24-151941_ugqm.woff2') format('woff2'),
-    url('https://fonts.doughmination.co.uk/ComicCode-Medium_2022-05-24-151941_ugqm.woff') format('woff');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Comic Code';
-  src: url('https://fonts.doughmination.co.uk/ComicCode-Bold_2022-05-24-152309_zqkm.woff2') format('woff2'),
-    url('https://fonts.doughmination.co.uk/ComicCode-Bold_2022-05-24-152309_zqkm.woff') format('woff');
-  font-weight: 700;
-  font-style: normal;
-}
+@import url(/css/fonts.css);
 
 * {
   box-sizing: border-box;
@@ -60,10 +29,6 @@ body {
   overflow: hidden;
 }
 
-/* Gradient lives on <html> too, so it propagates to the page canvas.
-   On mobile (scrolling, URL-bar resize, overscroll) the area outside
-   the body would otherwise expose the root canvas — white in the light
-   (latte) theme. Painting <html> keeps every theme's background filled. */
 html {
   background: linear-gradient(135deg, var(--base) 0%, var(--mantle) 60%, var(--crust) 100%);
 }
@@ -86,7 +51,7 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: url(/images/theme/estrogen.svg) center / cover no-repeat;
+  background: url(/assets/theme/estrogen.svg) center / cover no-repeat;
   filter: invert(86%) sepia(8%) saturate(900%) hue-rotate(190deg) brightness(105%);
   opacity: 0.05;
   pointer-events: none;
@@ -962,6 +927,48 @@ body:has(.changelog) .hub {
   width: 22px;
   height: 22px;
   display: block;
+}
+
+/* ============================================================
+   Bot Page
+   ============================================================*/
+
+.bot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 96px);
+  justify-content: center;
+  gap: 2rem 1.5rem;
+  max-width: 560px;
+}
+
+.bot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  color: var(--text);
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bot-pfp {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--yellow);
+  box-shadow: 0 4px 18px rgba(var(--accent-rgb), 0.25);
+}
+
+.bot:hover {
+  transform: translateY(-3px);
+}
+
+.bot:hover .bot-pfp {
+  filter: none;
 }
 
 /* ============================================================

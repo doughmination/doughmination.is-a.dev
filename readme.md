@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://doughmination.is-a.dev/images/favicon/avatar.png" alt="Clove Twilight avatar" height="100">
+<img src="https://doughmination.is-a.dev/assets/favicon/avatar.png" alt="Clove Twilight avatar" height="100">
 
 # doughmination.is-a.dev
 </div>
@@ -18,4 +18,4 @@ Head to the <a href="https://is-a.dev">is-a.dev website</a> to get started and s
 
 I am not paid by, affiliated, endorsed or hired by is-a.dev, I just think it's a cool thing for people to use!
 
-> <img src="https://doughmination.is-a.dev/images/favicon/favicon.png" alt="favicon" height="32">
+> <img src="https://doughmination.is-a.dev/assets/favicon/favicon.png" alt="favicon" height="32">
