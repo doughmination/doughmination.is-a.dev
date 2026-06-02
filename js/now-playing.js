@@ -1,18 +1,3 @@
-/* Now Playing — Discord presence + Spotify via Lanyard (lanyard.rest)
- *
- * Shows your live Discord status (online / idle / dnd / offline) and, when
- * you're listening on Spotify, the track, artist, album art and a live
- * progress bar. 100% client-side — works fine on GitHub Pages.
- *
- * Setup:
- *   1. Join the Lanyard Discord server: https://discord.gg/lanyard
- *      (their bot has to share a server with you to read your presence)
- *   2. In Discord, connect your Spotify account and enable
- *      "Display Spotify as your status".
- *   3. Put your Discord user ID below (Discord → Settings → Advanced →
- *      Developer Mode on, then right-click your name → Copy User ID).
- */
-
 const DISCORD_USER_ID = "1464890289922641993";
 
 (function nowPlaying() {
