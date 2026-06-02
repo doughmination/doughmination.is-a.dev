@@ -7,6 +7,7 @@ html[data-flavor="macchiato"] {
   --rosewater: #f4dbd6;
   --flamingo: #f0c6c6;
   --pink: #f5bde6;
+  --accent-rgb: 245, 189, 230; /* live accent default = theme pink */
   --mauve: #c6a0f6;
   --red: #ed8796;
   --maroon: #ee99a0;

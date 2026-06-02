@@ -7,6 +7,7 @@ html[data-flavor="mocha"] {
   --rosewater: #f5e0dc;
   --flamingo: #f2cdcd;
   --pink: #f5c2e7;
+  --accent-rgb: 245, 194, 231; /* live accent default = theme pink */
   --mauve: #cba6f7;
   --red: #f38ba8;
   --maroon: #eba0ac;

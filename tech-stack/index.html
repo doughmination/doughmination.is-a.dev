@@ -56,12 +56,20 @@
     </header>
 
     <a class="now-playing" id="now-playing" target="_blank" rel="noopener" hidden>
-        <img class="np-art" alt="" referrerpolicy="no-referrer">
+        <img class="np-art" alt="" referrerpolicy="no-referrer" crossorigin="anonymous">
         <span class="np-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <span class="np-text">
-            <span class="np-label">Now playing</span>
+            <span class="np-head">
+                <span class="np-status" aria-hidden="true"></span>
+                <span class="np-status-label"></span>
+                <span class="np-label">Now playing</span>
+            </span>
             <span class="np-track"></span>
             <span class="np-artist"></span>
+            <span class="np-progress" aria-hidden="true">
+                <span class="np-bar"><span class="np-fill"></span></span>
+                <span class="np-times"><span class="np-cur">0:00</span><span class="np-dur">0:00</span></span>
+            </span>
         </span>
     </a>
 

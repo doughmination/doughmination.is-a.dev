@@ -119,7 +119,8 @@ body::before {
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  color: var(--pink);
+  color: rgb(var(--accent-rgb));
+  transition: color 0.6s ease;
 }
 
 .tagline {
@@ -164,8 +165,8 @@ body::before {
 .link-card:hover {
   transform: translateY(-3px);
   background: var(--surface-1);
-  border-color: var(--pink);
-  box-shadow: 0 6px 20px rgba(245, 194, 231, 0.22);
+  border-color: rgb(var(--accent-rgb));
+  box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.22);
 }
 
 .icon {
@@ -193,7 +194,7 @@ body::before {
   padding: 0.5rem 0.75rem;
   border-radius: 10px;
   background: var(--crust);
-  border: 1px solid var(--pink);
+  border: 1px solid rgb(var(--accent-rgb));
   box-shadow: 0 6px 18px rgba(17, 17, 27, 0.55);
   white-space: nowrap;
   line-height: 1.3;
@@ -211,7 +212,7 @@ body::before {
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-top-color: var(--pink);
+  border-top-color: rgb(var(--accent-rgb));
 }
 
 .link-card:hover .link-text,
@@ -231,8 +232,11 @@ body::before {
   color: var(--subtext-0);
 }
 
-/* "Now playing" widget, pinned top-left */
+/* "Now playing" widget, pinned top-left.
+   Discord presence + Spotify via Lanyard. The album-art accent colour is
+   exposed as --np-accent (r, g, b) and used while .has-accent is set. */
 .now-playing {
+  --np-accent: 245, 194, 231; /* fallback ~ Catppuccin pink */
   position: fixed;
   top: 1rem;
   left: 1rem;
@@ -240,14 +244,15 @@ body::before {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  max-width: 240px;
+  max-width: 260px;
   padding: 0.4rem 0.7rem 0.4rem 0.4rem;
   border-radius: 999px;
   background: var(--surface-0);
   border: 1px solid var(--surface-1);
   color: var(--text);
   text-decoration: none;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.15s ease, border-color 0.2s ease,
+    border-radius 0.25s ease, box-shadow 0.2s ease;
 }
 
 .now-playing[hidden] {
@@ -259,12 +264,65 @@ body::before {
   border-color: var(--pink);
 }
 
+/* When a track is playing the pill grows a little and squares off slightly to
+   make room for the progress bar, and picks up a faint album-art glow. */
+.now-playing.is-live {
+  align-items: stretch;
+  border-radius: 16px;
+}
+
+.now-playing.is-live.has-accent {
+  border-color: rgba(var(--np-accent), 0.55);
+  box-shadow: 0 6px 22px -10px rgba(var(--np-accent), 0.6);
+}
+
+.now-playing.is-live:hover.has-accent {
+  border-color: rgba(var(--np-accent), 0.85);
+}
+
+/* Discord status dot */
+/* Head row: status dot + status word, always visible (so the Discord status
+   shows even while a track is playing, like Mufaro's). */
+.np-head {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.np-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--overlay-0);
+}
+
+.now-playing[data-status="online"] .np-status { background: var(--green); }
+.now-playing[data-status="idle"] .np-status { background: var(--yellow); }
+.now-playing[data-status="dnd"] .np-status { background: var(--red); }
+.now-playing[data-status="offline"] .np-status { background: var(--overlay-0); }
+
+.np-status-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--subtext-0);
+  white-space: nowrap;
+}
+
 .np-art {
   width: 34px;
   height: 34px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  align-self: center;
+  display: none;
+}
+
+.now-playing.is-live .np-art {
+  display: block;
+  border-radius: 8px;
 }
 
 /* Equalizer bars (only animate while live) */
@@ -287,6 +345,10 @@ body::before {
   background: var(--pink);
   transform-origin: bottom;
   animation: np-eq 0.9s ease-in-out infinite;
+}
+
+.now-playing.has-accent .np-bars i {
+  background: rgb(var(--np-accent));
 }
 
 .np-bars i:nth-child(2) {
@@ -327,11 +389,24 @@ body::before {
   line-height: 1.25;
 }
 
+/* "Now playing" tag — only while a track is live, pushed to the right of the
+   status word so the head reads:  [•] DO NOT DISTURB ......... NOW PLAYING */
 .np-label {
+  display: none;
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--pink);
+}
+
+.now-playing.is-live .np-label {
+  display: inline;
+  margin-left: auto;
+  padding-left: 0.5rem;
+}
+
+.now-playing.is-live.has-accent .np-label {
+  color: rgb(var(--np-accent));
 }
 
 .np-track {
@@ -342,12 +417,62 @@ body::before {
   text-overflow: ellipsis;
 }
 
+.np-track:empty {
+  display: none;
+}
+
 .np-artist {
   font-size: 0.72rem;
   color: var(--subtext-0);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.np-artist:empty {
+  display: none;
+}
+
+/* Spotify progress bar — only shown while a track has timestamps */
+.np-progress {
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.now-playing.is-live.has-progress .np-progress {
+  display: flex;
+}
+
+.np-bar {
+  height: 3px;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.np-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: var(--pink);
+  transition: width 0.3s linear;
+}
+
+.now-playing.has-accent .np-fill {
+  background: rgb(var(--np-accent));
+  box-shadow: 0 0 8px 1px rgba(var(--np-accent), 0.55);
+}
+
+.np-times {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--subtext-0);
 }
 
 /* Page nav, pinned bottom-left, selected item with a pointer triangle */
@@ -381,14 +506,14 @@ body::before {
 }
 
 .nav-link:hover {
-  border-color: var(--pink);
+  border-color: rgb(var(--accent-rgb));
   color: var(--text);
   transform: translateX(2px);
 }
 
 .nav-link.selected {
-  background: var(--pink);
-  border-color: var(--pink);
+  background: rgb(var(--accent-rgb));
+  border-color: rgb(var(--accent-rgb));
   color: var(--crust);
   font-weight: 700;
   margin-left: 14px;
@@ -413,7 +538,7 @@ body::before {
   top: 50%;
   transform: translateY(-50%);
   border: 6px solid transparent;
-  border-left-color: var(--pink);
+  border-left-color: rgb(var(--accent-rgb));
 }
 
 /* Cosmetic system badges, pinned bottom-right */
@@ -436,10 +561,16 @@ body::before {
   padding: 0.3rem 0.6rem;
   border-radius: 999px;
   background: var(--surface-0);
-  border: 1px solid var(--surface-1);
+  border: 1px solid rgba(var(--accent-rgb), 0.45);
   color: var(--subtext-1);
   font-size: 0.75rem;
   white-space: nowrap;
+  transition: border-color 0.6s ease, box-shadow 0.6s ease;
+}
+
+.badge:hover {
+  border-color: rgb(var(--accent-rgb));
+  box-shadow: 0 4px 14px -6px rgba(var(--accent-rgb), 0.5);
 }
 
 .badge-icon {

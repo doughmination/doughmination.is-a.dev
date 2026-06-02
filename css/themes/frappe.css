@@ -7,6 +7,7 @@ html[data-flavor="frappe"] {
   --rosewater: #f2d5cf;
   --flamingo: #eebebe;
   --pink: #f4b8e4;
+  --accent-rgb: 244, 184, 228; /* live accent default = theme pink */
   --mauve: #ca9ee6;
   --red: #e78284;
   --maroon: #ea999c;

@@ -7,6 +7,7 @@ html[data-flavor="latte"] {
   --rosewater: #dc8a78;
   --flamingo: #dd7878;
   --pink: #ea76cb;
+  --accent-rgb: 234, 118, 203; /* live accent default = theme pink */
   --mauve: #8839ef;
   --red: #d20f39;
   --maroon: #e64553;
