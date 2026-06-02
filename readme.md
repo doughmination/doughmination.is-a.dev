@@ -4,7 +4,7 @@
 # doughmination.is-a.dev
 </div>
 
-<a href="doughmination.is-a.dev">doughmination.is-a.dev</a> is the beta homepage for <a href="clove.is-a.dev">clove.is-a.dev</a>. I originallly snatched it up to stop users impersonating my brand/product.
+<a href="https://doughmination.is-a.dev">doughmination.is-a.dev</a> is the beta homepage for <a href="https://clove.is-a.dev">clove.is-a.dev</a>. I originallly snatched it up to stop users impersonating my brand/product.
 
 ## License
 

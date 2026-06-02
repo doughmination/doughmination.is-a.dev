@@ -1,10 +1,10 @@
 (function flavors() {
   // Metadata only — colors are defined in the per-flavor CSS files.
   const FLAVORS = {
-    mocha:     { label: "Mocha",     dot: "#f5c2e7" },
+    mocha: { label: "Mocha", dot: "#f5c2e7" },
     macchiato: { label: "Macchiato", dot: "#f5bde6" },
-    frappe:    { label: "Frappé",    dot: "#f4b8e4" },
-    latte:     { label: "Latte",     dot: "#ea76cb" },
+    frappe: { label: "Frappé", dot: "#f4b8e4" },
+    latte: { label: "Latte", dot: "#ea76cb" },
   };
   const ORDER = ["mocha", "macchiato", "frappe", "latte"];
 

@@ -508,16 +508,71 @@ body:has(.tech-stack) .hub {
   padding-bottom: 4.5rem;
 }
 
-.tech-badge {
-  height: 28px;
-  border-radius: 5px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+/* Simple Icons rendered via CSS mask so colour is theme-driven.
+   Markup: <span class="tech-icon pink" style="--si:url('https://cdn.simpleicons.org/SLUG')"></span> */
+.tech-icon {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
-.tech-badge:hover {
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 4px 12px rgba(245, 194, 231, 0.25);
+/* The actual icon shape — masked here so the label (::after) stays visible */
+.tech-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: currentColor;
+  -webkit-mask: var(--si) center / contain no-repeat;
+  mask: var(--si) center / contain no-repeat;
 }
+
+.tech-icon:hover {
+  transform: translateY(-2px) scale(1.12);
+  filter: drop-shadow(0 4px 8px currentColor);
+}
+
+/* Hover label — pulls text from aria-label, tinted to match the icon */
+.tech-icon::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  background: var(--crust);
+  border: 1px solid currentColor;
+  color: var(--text);
+  font-size: 0.72rem;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+}
+
+.tech-icon:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Catppuccin accent classes — pull from the active flavour's vars */
+.tech-icon.rosewater { color: var(--rosewater); }
+.tech-icon.pink      { color: var(--pink); }
+.tech-icon.mauve     { color: var(--mauve); }
+.tech-icon.red       { color: var(--red); }
+.tech-icon.maroon    { color: var(--maroon); }
+.tech-icon.peach     { color: var(--peach); }
+.tech-icon.yellow    { color: var(--yellow); }
+.tech-icon.green     { color: var(--green); }
+.tech-icon.teal      { color: var(--teal); }
+.tech-icon.sky       { color: var(--sky); }
+.tech-icon.sapphire  { color: var(--saphire); }
+.tech-icon.blue      { color: var(--blue); }
+.tech-icon.lavender  { color: var(--lavender); }
 
 /* ===== Secret Cat Modes toast ===== */
 .cat-toast {
@@ -785,7 +840,10 @@ body:has(.changelog) .hub {
 
   html {
     height: auto;
-    overflow: visible;
+    /* Single vertical scroll root on mobile; clip horizontal overflow
+       so the absolutely-positioned link tooltips can't pan the page. */
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   body,
@@ -797,7 +855,10 @@ body:has(.changelog) .hub {
     gap: 1rem;
     height: auto;
     min-height: 100dvh;
-    overflow-y: auto;
+    /* html is the scroll root on mobile; body just clips its own
+       horizontal overflow (the absolutely-positioned link tooltips). */
+    overflow-x: hidden;
+    overflow-y: visible;
     padding: 1.25rem 1rem 2rem;
   }
 
