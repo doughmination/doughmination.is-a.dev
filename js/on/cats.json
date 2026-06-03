@@ -1,0 +1,104 @@
+[
+  {
+    "name": "Ace",
+    "sprite": "/assets/oneko/cats/ace.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Blue Tapy",
+    "sprite": "/assets/oneko/cats/blue-tapy.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Calico",
+    "sprite": "/assets/oneko/cats/calico.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Cattail",
+    "sprite": "/assets/oneko/cats/cattail.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Esmeralda",
+    "sprite": "/assets/oneko/cats/esmeralda.png",
+    "unlockMethod": "romance",
+    "category": "Romance"
+  },
+  {
+    "name": "Green Tapy",
+    "sprite": "/assets/oneko/cats/green-tapy.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Jess",
+    "sprite": "/assets/oneko/cats/jess.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Kina",
+    "sprite": "/assets/oneko/cats/kina.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Lucy",
+    "sprite": "/assets/oneko/cats/lucy.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Maia",
+    "sprite": "/assets/oneko/cats/maia.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Maria",
+    "sprite": "/assets/oneko/cats/maria.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Mike",
+    "sprite": "/assets/oneko/cats/mike.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Rainbow Tapy",
+    "sprite": "/assets/oneko/cats/rainbow-tapy.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Silver",
+    "sprite": "/assets/oneko/cats/silver.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Spirit",
+    "sprite": "/assets/oneko/cats/spirit.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Tapy",
+    "sprite": "/assets/oneko/cats/tapy.png",
+    "unlockMethod": "konami",
+    "category": "Cats"
+  },
+  {
+    "name": "Valentine",
+    "sprite": "/assets/oneko/cats/valentine.png",
+    "unlockMethod": "romance",
+    "category": "Romance"
+  }
+]

@@ -278,66 +278,12 @@
   init();
 })();
 
-const BASE_SPRITE = "/assets/oneko/cats/classic.png";
-const ONEKO = (f) => `/assets/oneko/cats/${f}`;
-const PRIDE = (g) => `/assets/oneko/pride/${g}`;
+const BASE_SPRITE = "/assets/oneko/classics/classic.png";
 
-const CAT_MODES = [
-  // -- Pride --
-
-  { name: "Bisexual", sprite: PRIDE("bisexual.png"), is_unlocked: "gay", category: "Pride"},
-  { name: "Genderfae", sprite: PRIDE("genderfae.png"), is_unlocked: "gay", category: "Pride"},
-  { name: "Genderfluid", sprite: PRIDE("genderfluid.png"), is_unlocked: "gay", category: "Pride"},
-  { name: "Lesbian", sprite: PRIDE("lesbian.png"), is_unlocked: "gay", category: "Pride" },
-  { name: "MLM", sprite: PRIDE("mlm.png"), is_unlocked: "gay", category: "Pride"},
-  { name: "Non Binary", sprite: PRIDE("nb.png"), is_unlocked: "gay", category: "Pride" },
-  { name: "Transgender", sprite: PRIDE("trans.png"), is_unlocked: "gay", category: "Pride" },
-
-  // -- Classics --
-  { name: "Classic", filter: "none", is_unlocked: "gay", category: "Classics" },
-  { name: "Sapphire Cat", sprite: ONEKO("sapphire.png"), is_unlocked: "filter", category: "Classics" },
-  { name: "Dusty Cat", sprite: ONEKO("dusty.png"), is_unlocked: "filter", category: "Classics" },
-  { name: "Ghost Spirit", sprite: ONEKO("ghostspirit.png"), filter: "drop-shadow(0 0 4px #89dceb)", is_unlocked: "filter", category: "Classics" },
-
-  // -- Konami --
-  { name: "Ace", sprite: ONEKO("ace.png"), is_unlocked: "weed", category: "Classics" },
-  { name: "Black", sprite: ONEKO("black.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Calico", sprite: ONEKO("calico.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Dog", sprite: ONEKO("dog.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Gray", sprite: ONEKO("gray.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Silver", sprite: ONEKO("silver.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Silver Sky", sprite: ONEKO("silversky.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Kina", sprite: ONEKO("kina.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Tora", sprite: ONEKO("tora.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Spirit", sprite: ONEKO("spirit.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Mike", sprite: ONEKO("mike.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Maria", sprite: ONEKO("maria.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Maia", sprite: ONEKO("maia.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Lucy", sprite: ONEKO("lucy.png"), is_unlocked: "konami", category: "Classics" },
-  { name: "Jess", sprite: ONEKO("jess.png"), is_unlocked: "konami", category: "Classics" },
-
-  // -- Weed --
-  { name: "Vaporwave", sprite: ONEKO("vaporwave.png"), is_unlocked: "weed", category: "Classics" },
-  { name: "Snuupy", sprite: ONEKO("snuupy.png"), is_unlocked: "weed", category: "Classics" },
-  { name: "Ghost", sprite: ONEKO("ghost.png"), is_unlocked: "weed", category: "Classics" },
-
-  // -- Romance --
-  { name: "Esmeralda", sprite: ONEKO("esmeralda.png"), is_unlocked: "romance", category: "Romance" },
-  { name: "Valentine", sprite: ONEKO("valentine.png"), is_unlocked: "romance", category: "Romance" },
-
-  // -- Pokemon --
-
-  { name: "Eevee", sprite: ONEKO("eevee.png"), is_unlocked: "pokemon", category: "Pokémon" },
-  { name: "Fox", sprite: ONEKO("fox.png"), is_unlocked: "pokemon", category: "Pokémon" },
-  { name: "Bunny", sprite: ONEKO("bunny.png"), is_unlocked: "pokemon", category: "Pokémon" },
-
-
-  // -- Rare (usually ones hard to get) --
-  { name: "Gold Cat", sprite: ONEKO("gold.png"), is_unlocked: "gold", category: "Rare" },
-];
+let CAT_MODES = [];
 
 // Order the category sections appear in the menu
-const CATEGORY_ORDER = ["Classics", "Pride", "Romance", "Pokémon", "Rare"];
+const CATEGORY_ORDER = ["Classics", "Pride", "Cats", "Romance", "Gaming", "Pokémon", "Other Animals", "Things", "Rare"];
 
 // click-count goals (total clicks on the cat)
 const CLICK_GOALS = { filter: 13, romance: 69, weed: 420 };
@@ -345,7 +291,26 @@ const SPRITE = BASE_SPRITE; // base sprite used for filter modes + previews
 const IDLE_POS = "-97px -97px"; // idle frame, inset 1px to avoid neighbour-frame bleed
 const spriteFor = (c) => c.sprite || BASE_SPRITE;
 
-(function catModes() {
+(async function catModes() {
+  try {
+    // index.json lists which per-folder configs to load (one per oneko folder)
+    const index = await fetch("/js/on/index.json").then((r) => {
+      if (!r.ok) throw new Error(`index.json (${r.status})`);
+      return r.json();
+    });
+    // load every /js/on/<folder>.json and merge them into one list
+    const lists = await Promise.all(
+      index.map((name) =>
+        fetch(`/js/on/${name}.json`)
+          .then((r) => (r.ok ? r.json() : []))
+          .catch(() => [])
+      )
+    );
+    CAT_MODES = lists.flat();
+  } catch (err) {
+    console.error("Could not load cat data:", err);
+    return;
+  }
   const oneko = document.getElementById("oneko");
   if (!oneko) return;
 
@@ -371,7 +336,7 @@ const spriteFor = (c) => c.sprite || BASE_SPRITE;
     return true;
   }
 
-  const methodOf = (c) => c.is_unlocked || "gay";
+  const methodOf = (c) => c.unlockMethod || "gay";
   const isUnlocked = (i) => {
     const key = methodOf(CAT_MODES[i]);
     if (key === "gay") return true;
@@ -483,6 +448,11 @@ const spriteFor = (c) => c.sprite || BASE_SPRITE;
       !e.ctrlKey && !e.metaKey && !e.altKey && !typing
     ) {
       togglePicker();
+    } else if ((e.key === "x" || e.key === "X") &&
+      !e.ctrlKey && !e.metaKey && !e.altKey && !typing) {
+      if (unlockMethod("gaming")) {
+        toast("✨ Gaming sprites unlocked!");
+      }
     }
   });
 
@@ -508,7 +478,7 @@ const spriteFor = (c) => c.sprite || BASE_SPRITE;
   function playBoop() {
     try {
       boop.currentTime = 0;      // rewind so rapid clicks each squeak
-      boop.play().catch(() => {}); // ignore autoplay/missing-file errors
+      boop.play().catch(() => { }); // ignore autoplay/missing-file errors
     } catch (e) { /* no-op */ }
   }
 
@@ -586,5 +556,24 @@ const spriteFor = (c) => c.sprite || BASE_SPRITE;
       poke.classList.add("found");
       if (unlockMethod("pokemon")) toast("✨ Pokémon cats unlocked!");
     });
+  }
+
+  /* ---------- Timer → keep the page open for a while ---------- */
+  // Counts only while the tab is visible; resets each visit, but once the
+  // goal is reached the unlock is saved for good.
+  const TIMER_GOAL_MS = 5 * 60 * 1000; // 5 minutes
+  if (!unlocks.has("timer")) {
+    let elapsed = 0;
+    let last = Date.now();
+    const timer = setInterval(() => {
+      if (document.hidden) { last = Date.now(); return; }
+      const now = Date.now();
+      elapsed += now - last;
+      last = now;
+      if (elapsed >= TIMER_GOAL_MS) {
+        clearInterval(timer);
+        if (unlockMethod("timer")) toast("✨ Patience pays off — timer cats unlocked!");
+      }
+    }, 1000);
   }
 })();

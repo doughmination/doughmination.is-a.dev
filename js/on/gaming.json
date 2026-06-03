@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Andriod",
+    "sprite": "/assets/oneko/gaming/andriod.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Bluemarine",
+    "sprite": "/assets/oneko/gaming/bluemarine.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Captain Goodnight",
+    "sprite": "/assets/oneko/gaming/captain-goodnight.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Doom",
+    "sprite": "/assets/oneko/gaming/doom.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Lololowka",
+    "sprite": "/assets/oneko/gaming/lololowka.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Metroid",
+    "sprite": "/assets/oneko/gaming/metroid.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Niko",
+    "sprite": "/assets/oneko/gaming/niko.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Pac Man",
+    "sprite": "/assets/oneko/gaming/pac-man.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Sans",
+    "sprite": "/assets/oneko/gaming/sans.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Sonic",
+    "sprite": "/assets/oneko/gaming/sonic.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Toothless",
+    "sprite": "/assets/oneko/gaming/toothless.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Xdeck",
+    "sprite": "/assets/oneko/gaming/xdeck.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Yumi Nikki 1 Skin",
+    "sprite": "/assets/oneko/gaming/yumi-nikki-1-skin.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  },
+  {
+    "name": "Yumi Nikki 2 Skin",
+    "sprite": "/assets/oneko/gaming/yumi-nikki-2-skin.png",
+    "unlockMethod": "gaming",
+    "category": "Gaming"
+  }
+]

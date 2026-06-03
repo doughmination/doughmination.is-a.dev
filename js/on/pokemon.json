@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Eevee",
+    "sprite": "/assets/oneko/pokemon/eevee.png",
+    "unlockMethod": "pokemon",
+    "category": "Pokémon"
+  },
+  {
+    "name": "Espeon",
+    "sprite": "/assets/oneko/pokemon/espeon.png",
+    "unlockMethod": "pokemon",
+    "category": "Pokémon"
+  },
+  {
+    "name": "Gastly",
+    "sprite": "/assets/oneko/pokemon/gastly.png",
+    "unlockMethod": "pokemon",
+    "category": "Pokémon"
+  },
+  {
+    "name": "Jigglypuff",
+    "sprite": "/assets/oneko/pokemon/jigglypuff.png",
+    "unlockMethod": "pokemon",
+    "category": "Pokémon"
+  },
+  {
+    "name": "Pikachu",
+    "sprite": "/assets/oneko/pokemon/pikachu.png",
+    "unlockMethod": "pokemon",
+    "category": "Pokémon"
+  },
+  {
+    "name": "Psyduck",
+    "sprite": "/assets/oneko/pokemon/psyduck.png",
+    "unlockMethod": "pokemon",
+    "category": "Pokémon"
+  },
+  {
+    "name": "Skitty",
+    "sprite": "/assets/oneko/pokemon/skitty.png",
+    "unlockMethod": "pokemon",
+    "category": "Pokémon"
+  }
+]

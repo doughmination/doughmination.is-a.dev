@@ -1,0 +1,99 @@
+[
+  {
+    "name": "Classic",
+    "filter": "none",
+    "unlockMethod": "gay",
+    "category": "Classics"
+  },
+  {
+    "name": "Aquaneon",
+    "sprite": "/assets/oneko/classics/aquaneon.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Black Green",
+    "sprite": "/assets/oneko/classics/black-green.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Black",
+    "sprite": "/assets/oneko/classics/black.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Byte Green",
+    "sprite": "/assets/oneko/classics/byte-green.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Deedee",
+    "sprite": "/assets/oneko/classics/deedee.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Dusty Cat",
+    "sprite": "/assets/oneko/classics/dusty.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Ghost",
+    "sprite": "/assets/oneko/classics/ghost.png",
+    "unlockMethod": "weed",
+    "category": "Classics"
+  },
+  {
+    "name": "Ghost Spirit",
+    "sprite": "/assets/oneko/classics/ghostspirit.png",
+    "filter": "drop-shadow(0 0 4px #89dceb)",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Gold Cat",
+    "sprite": "/assets/oneko/classics/gold.png",
+    "unlockMethod": "gold",
+    "category": "Rare"
+  },
+  {
+    "name": "Gray",
+    "sprite": "/assets/oneko/classics/gray.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Nekocool",
+    "sprite": "/assets/oneko/classics/nekocool.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Red",
+    "sprite": "/assets/oneko/classics/red.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Sapphire Cat",
+    "sprite": "/assets/oneko/classics/sapphire.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Silver Sky",
+    "sprite": "/assets/oneko/classics/silversky.png",
+    "unlockMethod": "filter",
+    "category": "Classics"
+  },
+  {
+    "name": "Vaporwave",
+    "sprite": "/assets/oneko/classics/vaporwave.png",
+    "unlockMethod": "weed",
+    "category": "Classics"
+  }
+]

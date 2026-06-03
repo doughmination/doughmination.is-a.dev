@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Alien",
+    "sprite": "/assets/oneko/things/alien.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Caz",
+    "sprite": "/assets/oneko/things/caz.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Chocola",
+    "sprite": "/assets/oneko/things/chocola.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Coke Bottle",
+    "sprite": "/assets/oneko/things/coke-bottle.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Fire",
+    "sprite": "/assets/oneko/things/fire.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Marisa",
+    "sprite": "/assets/oneko/things/marisa.png",
+    "unlockMethod": "timer",
+    "category": "Things"
+  },
+  {
+    "name": "Microbot",
+    "sprite": "/assets/oneko/things/microbot.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Mini",
+    "sprite": "/assets/oneko/things/mini.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Robot",
+    "sprite": "/assets/oneko/things/robot.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Rocket",
+    "sprite": "/assets/oneko/things/rocket.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Sami",
+    "sprite": "/assets/oneko/things/sami.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Star",
+    "sprite": "/assets/oneko/things/star.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Tie Fighter",
+    "sprite": "/assets/oneko/things/tie-fighter.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  },
+  {
+    "name": "Ufo",
+    "sprite": "/assets/oneko/things/ufo.png",
+    "unlockMethod": "filter",
+    "category": "Things"
+  }
+]

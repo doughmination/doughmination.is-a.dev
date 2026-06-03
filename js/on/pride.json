@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Bisexual",
+    "sprite": "/assets/oneko/pride/bisexual.png",
+    "unlockMethod": "gay",
+    "category": "Pride"
+  },
+  {
+    "name": "Genderfae",
+    "sprite": "/assets/oneko/pride/genderfae.png",
+    "unlockMethod": "gay",
+    "category": "Pride"
+  },
+  {
+    "name": "Genderfluid",
+    "sprite": "/assets/oneko/pride/genderfluid.png",
+    "unlockMethod": "gay",
+    "category": "Pride"
+  },
+  {
+    "name": "Lesbian",
+    "sprite": "/assets/oneko/pride/lesbian.png",
+    "unlockMethod": "gay",
+    "category": "Pride"
+  },
+  {
+    "name": "MLM",
+    "sprite": "/assets/oneko/pride/mlm.png",
+    "unlockMethod": "gay",
+    "category": "Pride"
+  },
+  {
+    "name": "Non Binary",
+    "sprite": "/assets/oneko/pride/nb.png",
+    "unlockMethod": "gay",
+    "category": "Pride"
+  },
+  {
+    "name": "Transgender",
+    "sprite": "/assets/oneko/pride/trans.png",
+    "unlockMethod": "gay",
+    "category": "Pride"
+  }
+]

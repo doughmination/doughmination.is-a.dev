@@ -1,0 +1,140 @@
+[
+  {
+    "name": "Blue Butterfly",
+    "sprite": "/assets/oneko/other-animals/blue-butterfly.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Boris",
+    "sprite": "/assets/oneko/other-animals/boris.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Brown Dog",
+    "sprite": "/assets/oneko/other-animals/brown-dog.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Bugy",
+    "sprite": "/assets/oneko/other-animals/bugy.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Bunny",
+    "sprite": "/assets/oneko/other-animals/bunny.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Bxter",
+    "sprite": "/assets/oneko/other-animals/bxter.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Dog",
+    "sprite": "/assets/oneko/other-animals/dog.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Fox",
+    "sprite": "/assets/oneko/other-animals/fox.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Humming Bird",
+    "sprite": "/assets/oneko/other-animals/humming_bird.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Jerry",
+    "sprite": "/assets/oneko/other-animals/jerry.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Kipje",
+    "sprite": "/assets/oneko/other-animals/kipje.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Lucy Dog",
+    "sprite": "/assets/oneko/other-animals/lucy-dog.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Mouse",
+    "sprite": "/assets/oneko/other-animals/mouse.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Nekobeesje",
+    "sprite": "/assets/oneko/other-animals/nekobeesje.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Poochy",
+    "sprite": "/assets/oneko/other-animals/poochy.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Red Butterfly",
+    "sprite": "/assets/oneko/other-animals/red-butterfly.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Santino",
+    "sprite": "/assets/oneko/other-animals/santino.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Skunk",
+    "sprite": "/assets/oneko/other-animals/skunk.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Stingray",
+    "sprite": "/assets/oneko/other-animals/stingray.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Tato",
+    "sprite": "/assets/oneko/other-animals/tato.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Tentacle",
+    "sprite": "/assets/oneko/other-animals/tentacle.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Turtle",
+    "sprite": "/assets/oneko/other-animals/turtle.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  },
+  {
+    "name": "Worms",
+    "sprite": "/assets/oneko/other-animals/worms.png",
+    "unlockMethod": "timer",
+    "category": "Other Animals"
+  }
+]
