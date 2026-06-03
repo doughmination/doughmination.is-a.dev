@@ -67,12 +67,6 @@
     "category": "Classics"
   },
   {
-    "name": "Nekocool",
-    "sprite": "/assets/oneko/classics/nekocool.png",
-    "unlockMethod": "filter",
-    "category": "Classics"
-  },
-  {
     "name": "Red",
     "sprite": "/assets/oneko/classics/red.png",
     "unlockMethod": "filter",

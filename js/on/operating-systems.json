@@ -1,25 +1,7 @@
 [
   {
-    "name": "Brown Bsd",
-    "sprite": "/assets/oneko/operating-systems/brown-bsd.png",
-    "unlockMethod": "filter",
-    "category": "Operating Systems"
-  },
-  {
     "name": "Bsd",
     "sprite": "/assets/oneko/operating-systems/bsd.png",
-    "unlockMethod": "filter",
-    "category": "Operating Systems"
-  },
-  {
-    "name": "Tux 2",
-    "sprite": "/assets/oneko/operating-systems/tux-2.png",
-    "unlockMethod": "filter",
-    "category": "Operating Systems"
-  },
-  {
-    "name": "Tux",
-    "sprite": "/assets/oneko/operating-systems/tux.png",
     "unlockMethod": "filter",
     "category": "Operating Systems"
   }

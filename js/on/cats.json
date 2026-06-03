@@ -30,12 +30,6 @@
     "category": "Romance"
   },
   {
-    "name": "Green Tapy",
-    "sprite": "/assets/oneko/cats/green-tapy.png",
-    "unlockMethod": "konami",
-    "category": "Cats"
-  },
-  {
     "name": "Jess",
     "sprite": "/assets/oneko/cats/jess.png",
     "unlockMethod": "konami",
@@ -94,6 +88,11 @@
     "sprite": "/assets/oneko/cats/tapy.png",
     "unlockMethod": "konami",
     "category": "Cats"
+  },
+  {
+    "name": "USA",
+    "sprite": "/assets/oneko/cats/usa.png",
+    "category": "Romance"
   },
   {
     "name": "Valentine",

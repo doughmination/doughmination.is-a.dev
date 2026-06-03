@@ -6,24 +6,6 @@
     "category": "Other Animals"
   },
   {
-    "name": "Boris",
-    "sprite": "/assets/oneko/other-animals/boris.png",
-    "unlockMethod": "timer",
-    "category": "Other Animals"
-  },
-  {
-    "name": "Brown Dog",
-    "sprite": "/assets/oneko/other-animals/brown-dog.png",
-    "unlockMethod": "timer",
-    "category": "Other Animals"
-  },
-  {
-    "name": "Bugy",
-    "sprite": "/assets/oneko/other-animals/bugy.png",
-    "unlockMethod": "timer",
-    "category": "Other Animals"
-  },
-  {
     "name": "Bunny",
     "sprite": "/assets/oneko/other-animals/bunny.png",
     "unlockMethod": "timer",
@@ -56,30 +38,6 @@
   {
     "name": "Jerry",
     "sprite": "/assets/oneko/other-animals/jerry.png",
-    "unlockMethod": "timer",
-    "category": "Other Animals"
-  },
-  {
-    "name": "Kipje",
-    "sprite": "/assets/oneko/other-animals/kipje.png",
-    "unlockMethod": "timer",
-    "category": "Other Animals"
-  },
-  {
-    "name": "Lucy Dog",
-    "sprite": "/assets/oneko/other-animals/lucy-dog.png",
-    "unlockMethod": "timer",
-    "category": "Other Animals"
-  },
-  {
-    "name": "Mouse",
-    "sprite": "/assets/oneko/other-animals/mouse.png",
-    "unlockMethod": "timer",
-    "category": "Other Animals"
-  },
-  {
-    "name": "Nekobeesje",
-    "sprite": "/assets/oneko/other-animals/nekobeesje.png",
     "unlockMethod": "timer",
     "category": "Other Animals"
   },
@@ -122,18 +80,6 @@
   {
     "name": "Tentacle",
     "sprite": "/assets/oneko/other-animals/tentacle.png",
-    "unlockMethod": "timer",
-    "category": "Other Animals"
-  },
-  {
-    "name": "Turtle",
-    "sprite": "/assets/oneko/other-animals/turtle.png",
-    "unlockMethod": "timer",
-    "category": "Other Animals"
-  },
-  {
-    "name": "Worms",
-    "sprite": "/assets/oneko/other-animals/worms.png",
     "unlockMethod": "timer",
     "category": "Other Animals"
   }
