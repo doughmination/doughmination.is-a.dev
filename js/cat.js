@@ -278,23 +278,72 @@
   init();
 })();
 
-/* ============================================================
-   Secret cat modes — click the cat to cycle/unlock looks,
-   press C to open the picker. (merged from cat-modes.js)
-   ============================================================ */
+const BASE_SPRITE = "/assets/oneko/cats/classic.png";
+const ONEKO = (f) => `/assets/oneko/cats/${f}`;
+const PRIDE = (g) => `/assets/oneko/pride/${g}`;
+
 const CAT_MODES = [
-  { name: "Classic", filter: "none" },
-  { name: "Shadow Cat", filter: "invert(1) drop-shadow(0 0 3px #cba6f7)" },
-  { name: "Ghost Cat", filter: "grayscale(1) brightness(1.7) opacity(0.55) drop-shadow(0 0 4px #89dceb)" },
-  { name: "CRT Cat", filter: "invert(48%) sepia(80%) saturate(2000%) hue-rotate(85deg) brightness(0.9) contrast(1.2)" },
-  { name: "Vaporwave Cat", filter: "invert(60%) sepia(90%) saturate(3000%) hue-rotate(280deg) brightness(0.95)" },
-  { name: "Gold Cat", filter: "invert(75%) sepia(85%) saturate(1400%) hue-rotate(8deg) brightness(1.0)" },
-  { name: "Sapphire Cat", filter: "invert(45%) sepia(90%) saturate(2500%) hue-rotate(200deg) brightness(1.0)" },
-  { name: "Dusty Cat", filter: "invert(60%)" },
+  // -- Pride --
+
+  { name: "Bisexual", sprite: PRIDE("bisexual.png"), is_unlocked: "gay", category: "Pride"},
+  { name: "Genderfae", sprite: PRIDE("genderfae.png"), is_unlocked: "gay", category: "Pride"},
+  { name: "Genderfluid", sprite: PRIDE("genderfluid.png"), is_unlocked: "gay", category: "Pride"},
+  { name: "Lesbian", sprite: PRIDE("lesbian.png"), is_unlocked: "gay", category: "Pride" },
+  { name: "MLM", sprite: PRIDE("mlm.png"), is_unlocked: "gay", category: "Pride"},
+  { name: "Non Binary", sprite: PRIDE("nb.png"), is_unlocked: "gay", category: "Pride" },
+  { name: "Transgender", sprite: PRIDE("trans.png"), is_unlocked: "gay", category: "Pride" },
+
+  // -- Classics --
+  { name: "Classic", filter: "none", is_unlocked: "gay", category: "Classics" },
+  { name: "Sapphire Cat", sprite: ONEKO("sapphire.png"), is_unlocked: "filter", category: "Classics" },
+  { name: "Dusty Cat", sprite: ONEKO("dusty.png"), is_unlocked: "filter", category: "Classics" },
+  { name: "Ghost Spirit", sprite: ONEKO("ghostspirit.png"), filter: "drop-shadow(0 0 4px #89dceb)", is_unlocked: "filter", category: "Classics" },
+
+  // -- Konami --
+  { name: "Ace", sprite: ONEKO("ace.png"), is_unlocked: "weed", category: "Classics" },
+  { name: "Black", sprite: ONEKO("black.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Calico", sprite: ONEKO("calico.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Dog", sprite: ONEKO("dog.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Gray", sprite: ONEKO("gray.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Silver", sprite: ONEKO("silver.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Silver Sky", sprite: ONEKO("silversky.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Kina", sprite: ONEKO("kina.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Tora", sprite: ONEKO("tora.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Spirit", sprite: ONEKO("spirit.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Mike", sprite: ONEKO("mike.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Maria", sprite: ONEKO("maria.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Maia", sprite: ONEKO("maia.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Lucy", sprite: ONEKO("lucy.png"), is_unlocked: "konami", category: "Classics" },
+  { name: "Jess", sprite: ONEKO("jess.png"), is_unlocked: "konami", category: "Classics" },
+
+  // -- Weed --
+  { name: "Vaporwave", sprite: ONEKO("vaporwave.png"), is_unlocked: "weed", category: "Classics" },
+  { name: "Snuupy", sprite: ONEKO("snuupy.png"), is_unlocked: "weed", category: "Classics" },
+  { name: "Ghost", sprite: ONEKO("ghost.png"), is_unlocked: "weed", category: "Classics" },
+
+  // -- Romance --
+  { name: "Esmeralda", sprite: ONEKO("esmeralda.png"), is_unlocked: "romance", category: "Romance" },
+  { name: "Valentine", sprite: ONEKO("valentine.png"), is_unlocked: "romance", category: "Romance" },
+
+  // -- Pokemon --
+
+  { name: "Eevee", sprite: ONEKO("eevee.png"), is_unlocked: "pokemon", category: "Pokémon" },
+  { name: "Fox", sprite: ONEKO("fox.png"), is_unlocked: "pokemon", category: "Pokémon" },
+  { name: "Bunny", sprite: ONEKO("bunny.png"), is_unlocked: "pokemon", category: "Pokémon" },
+
+
+  // -- Rare (usually ones hard to get) --
+  { name: "Gold Cat", sprite: ONEKO("gold.png"), is_unlocked: "gold", category: "Rare" },
 ];
-const UNLOCK_EVERY = 5; // clicks needed to unlock each new mode
-const SPRITE = "/assets/misc/oneko.gif";
-const IDLE_POS = "-96px -96px"; // idle frame of the sprite sheet
+
+// Order the category sections appear in the menu
+const CATEGORY_ORDER = ["Classics", "Pride", "Romance", "Pokémon", "Rare"];
+
+// click-count goals (total clicks on the cat)
+const CLICK_GOALS = { filter: 13, romance: 69, weed: 420 };
+const SPRITE = BASE_SPRITE; // base sprite used for filter modes + previews
+const IDLE_POS = "-97px -97px"; // idle frame, inset 1px to avoid neighbour-frame bleed
+const spriteFor = (c) => c.sprite || BASE_SPRITE;
 
 (function catModes() {
   const oneko = document.getElementById("oneko");
@@ -307,10 +356,36 @@ const IDLE_POS = "-96px -96px"; // idle frame of the sprite sheet
   let clicks = parseInt(ls.getItem("onekoClicks") || "0", 10);
   let mode = parseInt(ls.getItem("onekoMode") || "0", 10);
 
-  const unlockedCount = () =>
-    Math.min(CAT_MODES.length, 1 + Math.floor(clicks / UNLOCK_EVERY));
-  const isUnlocked = (i) => i < unlockedCount();
-  const apply = (i) => (oneko.style.filter = CAT_MODES[i].filter);
+  // permanently-earned methods (konami, gold, pokemon, + any click goal hit)
+  let unlocks;
+  try { unlocks = new Set(JSON.parse(ls.getItem("onekoUnlocks") || "[]")); }
+  catch (e) { unlocks = new Set(); }
+  const saveUnlocks = () => ls.setItem("onekoUnlocks", JSON.stringify([...unlocks]));
+
+  // Returns true if a method was newly unlocked (false if already had it)
+  function unlockMethod(key) {
+    if (unlocks.has(key)) return false;
+    unlocks.add(key);
+    saveUnlocks();
+    if (overlay && !overlay.hidden) renderGrid();
+    return true;
+  }
+
+  const methodOf = (c) => c.is_unlocked || "gay";
+  const isUnlocked = (i) => {
+    const key = methodOf(CAT_MODES[i]);
+    if (key === "gay") return true;
+    if (key in CLICK_GOALS) return clicks >= CLICK_GOALS[key] || unlocks.has(key);
+    return unlocks.has(key);              // konami / gold / pokemon
+  };
+  const unlockedIndices = () =>
+    CAT_MODES.map((_, i) => i).filter(isUnlocked);
+
+  const apply = (i) => {
+    const c = CAT_MODES[i];
+    oneko.style.backgroundImage = `url('${spriteFor(c)}')`;
+    oneko.style.filter = c.filter || "none";
+  };
 
   /* ---------- picker overlay (no visible trigger — press C to find it) ---------- */
   const overlay = document.createElement("div");
@@ -328,20 +403,50 @@ const IDLE_POS = "-96px -96px"; // idle frame of the sprite sheet
   document.body.appendChild(overlay);
   const grid = overlay.querySelector(".cat-grid");
 
+  function makeOption(i) {
+    const c = CAT_MODES[i];
+    const unlocked = isUnlocked(i);
+    const opt = document.createElement(unlocked ? "button" : "div");
+    opt.className =
+      "cat-option" + (unlocked ? "" : " locked") + (i === mode ? " current" : "");
+    if (unlocked) opt.type = "button";
+    const previewFilter = unlocked ? (c.filter || "none") : "brightness(0) opacity(0.3)";
+    opt.innerHTML = `
+      <span class="cat-preview" style="background-image:url('${spriteFor(c)}');background-position:${IDLE_POS};filter:${previewFilter}"></span>
+      <span class="cat-name">${unlocked ? c.name : "???"}</span>`;
+    if (unlocked) opt.addEventListener("click", () => selectMode(i));
+    return opt;
+  }
+
   function renderGrid() {
     grid.innerHTML = "";
+
+    // bucket cat indices by category
+    const byCat = {};
     CAT_MODES.forEach((c, i) => {
-      const unlocked = isUnlocked(i);
-      const opt = document.createElement(unlocked ? "button" : "div");
-      opt.className =
-        "cat-option" + (unlocked ? "" : " locked") + (i === mode ? " current" : "");
-      if (unlocked) opt.type = "button";
-      const previewFilter = unlocked ? c.filter : "brightness(0) opacity(0.3)";
-      opt.innerHTML = `
-        <span class="cat-preview" style="background-image:url('${SPRITE}');background-position:${IDLE_POS};filter:${previewFilter}"></span>
-        <span class="cat-name">${unlocked ? c.name : "???"}</span>`;
-      if (unlocked) opt.addEventListener("click", () => selectMode(i));
-      grid.appendChild(opt);
+      const cat = c.category || "Classics";
+      (byCat[cat] = byCat[cat] || []).push(i);
+    });
+
+    // known categories first (in order), then any stragglers
+    const order = CATEGORY_ORDER.filter((c) => byCat[c])
+      .concat(Object.keys(byCat).filter((c) => !CATEGORY_ORDER.includes(c)));
+
+    order.forEach((cat) => {
+      const section = document.createElement("div");
+      section.className = "cat-section";
+
+      const title = document.createElement("h4");
+      title.className = "cat-section-title";
+      title.textContent = cat;
+      section.appendChild(title);
+
+      const items = document.createElement("div");
+      items.className = "cat-section-items";
+      byCat[cat].forEach((i) => items.appendChild(makeOption(i)));
+      section.appendChild(items);
+
+      grid.appendChild(section);
     });
   }
 
@@ -358,6 +463,9 @@ const IDLE_POS = "-96px -96px"; // idle frame of the sprite sheet
   };
   const closePicker = () => (overlay.hidden = true);
   const togglePicker = () => (overlay.hidden ? openPicker() : closePicker());
+
+  // let other scripts (e.g. the theme-bar button) open the cat menu
+  window.toggleCatPicker = togglePicker;
 
   overlay
     .querySelector(".cat-picker-close")
@@ -394,28 +502,89 @@ const IDLE_POS = "-96px -96px"; // idle frame of the sprite sheet
     toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1700);
   }
 
+  /* ---------- squeak / boop sound on click ---------- */
+  const boop = new Audio("/assets/oneko/boop.mp3");
+  boop.preload = "auto";
+  function playBoop() {
+    try {
+      boop.currentTime = 0;      // rewind so rapid clicks each squeak
+      boop.play().catch(() => {}); // ignore autoplay/missing-file errors
+    } catch (e) { /* no-op */ }
+  }
+
   /* ---------- init + cat click ---------- */
-  mode = Math.max(0, Math.min(mode, unlockedCount() - 1));
+  if (!isUnlocked(mode)) mode = 0; // fall back to Classic if current is locked
   apply(mode);
 
+  // Clicking the cat no longer changes its look — it only counts toward
+  // the click-based unlocks (13 / 69 / 420). Pick a cat from the menu.
   oneko.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const before = unlockedCount();
+    playBoop();
     clicks += 1;
     ls.setItem("onekoClicks", String(clicks));
-    const after = unlockedCount();
 
-    if (after > before) {
-      mode = after - 1;
-      toast(`✨ Unlocked: ${CAT_MODES[mode].name}!`);
-    } else {
-      mode = (mode + 1) % after;
-      toast(CAT_MODES[mode].name);
+    // Did this click hit a click-count goal exactly? (13 / 69 / 420)
+    for (const key in CLICK_GOALS) {
+      if (clicks === CLICK_GOALS[key]) {
+        unlocks.add(key);
+        saveUnlocks();
+        const idx = CAT_MODES.findIndex((c) => methodOf(c) === key);
+        const name = idx >= 0 ? CAT_MODES[idx].name : key;
+        toast(`✨ Unlocked: ${name}! — open the cat menu 🐱`);
+        if (!overlay.hidden) renderGrid();
+      }
+    }
+  });
+
+  /* ---------- Konami code → press Enter to confirm ---------- */
+  const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
+    "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+  let kProg = 0, kArmed = false;
+  document.addEventListener("keydown", (e) => {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "");
+    if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
+
+    if (kArmed && e.key === "Enter") {
+      kArmed = false;
+      if (unlockMethod("konami")) toast("✨ Konami cats unlocked!");
+      return;
     }
 
-    ls.setItem("onekoMode", String(mode));
-    apply(mode);
-    if (!overlay.hidden) renderGrid();
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (key === KONAMI[kProg]) {
+      kProg += 1;
+      if (kProg === KONAMI.length) {
+        kProg = 0;
+        kArmed = true;
+        toast("Konami code… press Enter ↵");
+      }
+    } else {
+      kProg = key === KONAMI[0] ? 1 : 0; // allow a fresh start on ↑
+    }
   });
+
+  /* ---------- Gold → opened the site while Discord status is Idle ---------- */
+  const np = document.getElementById("now-playing");
+  if (np) {
+    const checkIdle = () => {
+      if (np.dataset.status === "idle" && unlockMethod("gold")) {
+        toast("✨ Gold Cat unlocked!");
+      }
+    };
+    checkIdle();
+    new MutationObserver(checkIdle)
+      .observe(np, { attributes: true, attributeFilter: ["data-status"] });
+  }
+
+  /* ---------- Pokémon → find & click the hidden pokéball ---------- */
+  const poke = document.getElementById("pokeball-secret");
+  if (poke) {
+    poke.addEventListener("click", (e) => {
+      e.preventDefault();
+      poke.classList.add("found");
+      if (unlockMethod("pokemon")) toast("✨ Pokémon cats unlocked!");
+    });
+  }
 })();

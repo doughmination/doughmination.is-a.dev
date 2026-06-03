@@ -59,4 +59,18 @@
     apply(current);
     paintBtn();
   });
+
+  // ---- cat collection button (sits next to the theme button) ----
+  const catBtn = document.createElement("button");
+  catBtn.className = "beta-btn";
+  catBtn.id = "cat-btn";
+  catBtn.type = "button";
+  catBtn.title = "Cat collection";
+  catBtn.setAttribute("aria-label", "Open cat collection");
+  catBtn.innerHTML = `<span class="beta-cat-icon" aria-hidden="true"></span>`;
+  bar.appendChild(catBtn);
+
+  catBtn.addEventListener("click", () => {
+    if (typeof window.toggleCatPicker === "function") window.toggleCatPicker();
+  });
 })();

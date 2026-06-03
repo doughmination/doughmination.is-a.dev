@@ -577,6 +577,22 @@ body::before {
   top: 1rem;
   right: 1rem;
   z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* cat-collection button icon: the classic oneko idle frame, scaled down
+   from the 256x128 sprite sheet (idle frame lives at -96px,-96px) */
+.beta-cat-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+  background-image: url('/assets/oneko/classic.png');
+  background-repeat: no-repeat;
+  background-size: 176px 88px;
+  background-position: -66px -66px;
+  image-rendering: pixelated;
 }
 
 .beta-btn {
@@ -864,6 +880,23 @@ body:has(.changelog) .hub {
 }
 
 .cat-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cat-section-title {
+  margin: 0 0 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mauve);
+  border-bottom: 1px solid var(--surface-1);
+  padding-bottom: 0.3rem;
+}
+
+.cat-section-items {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.6rem;
@@ -902,12 +935,14 @@ body:has(.changelog) .hub {
 }
 
 .cat-preview {
-  width: 32px;
-  height: 32px;
-  margin: 6px 0 10px;
+  /* 30px window + the -97px,-97px position = the idle frame inset 1px on
+     every side, so no preview can catch pixels from neighbouring frames */
+  width: 30px;
+  height: 30px;
+  margin: 7px 1px 11px;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-  transform: scale(1.6);
+  transform: scale(1.7);
   transform-origin: center;
 }
 
@@ -1193,4 +1228,34 @@ body:has(.bot-grid) .hub-header {
   .changelog {
     padding-bottom: 0;
   }
+}
+
+
+/* ============================================================
+   12. HIDDEN POKÉBALL  (unlocks the Pokémon cats once clicked)
+   ============================================================ */
+/* Small, low-contrast and tucked among the badges so it has to be
+   hunted for. Still clickable — that's the whole point of finding it. */
+#pokeball-secret {
+  width: 14px;
+  height: 14px;
+  opacity: 0.18;
+  align-self: center;
+  cursor: default;
+  pointer-events: auto;          /* parent .badges sets none — re-enable here */
+  image-rendering: auto;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+#pokeball-secret:hover {
+  opacity: 0.85;
+  transform: scale(1.15);
+}
+
+#pokeball-secret.found {
+  opacity: 1;
+  cursor: default;
+  filter: drop-shadow(0 0 4px var(--red));
 }

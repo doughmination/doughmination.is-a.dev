@@ -1,13 +1,30 @@
 (function siteSwitcher() {
+  var host = (location.hostname || "").replace(/^www\./, "");
+
+  // Dev detection comes from dev-mode.js (loaded first). Fallback to a basic
+  // localhost check if that script isn't present.
+  var isDev = (window.DevMode && window.DevMode.isDev) ||
+    host === "localhost" || host === "127.0.0.1";
+
   var SITES = [
-    { id: "clove", label: "clove.is-a.dev", url: "https://clove.is-a.dev", note: "Link Center" },
-    { id: "doughmination", label: "doughmination.is-a.dev", url: "https://doughmination.is-a.dev", note: "Beta Link Center" },
+    { id: "clove", label: "clove.is-a.dev", url: "https://clove.is-a.dev", note: "Link Center", host: "clove.is-a.dev" },
+    { id: "doughmination", label: "doughmination.is-a.dev", url: "https://doughmination.is-a.dev", note: "Beta Link Center", host: "doughmination.is-a.dev" }
   ];
 
-  var host = (location.hostname || "").replace(/^www\./, "");
+  // Only expose the Local Dev entry while actually running in dev mode.
+  if (isDev) {
+    SITES.push({
+      id: "localhost",
+      label: "Local Dev",
+      url: location.origin,
+      note: "Local Dev",
+      host: host
+    });
+  }
+
   var currentId = null;
   for (var i = 0; i < SITES.length; i++) {
-    if (host === SITES[i].url.replace("https://", "")) currentId = SITES[i].id;
+    if (host === SITES[i].host) currentId = SITES[i].id;
   }
 
   var css = `
