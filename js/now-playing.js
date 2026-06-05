@@ -1,90 +1,178 @@
 const DISCORD_USER_ID = "1464890289922641993";
 
-(function nowPlaying() {
-  const el = document.getElementById("now-playing");
-  if (!el) return;
+/* =====================================================================
+ * now-playing.js — a single Discord-style presence card.
+ *
+ * Base state is a compact profile pill (avatar + name + status dot).
+ * It auto-expands a row for whatever is going on, in this order:
+ *   custom status · Spotify · development (VSCode) · games · streaming
+ * Data comes live from Lanyard over a websocket. Click the header to
+ * collapse/expand. Album art still drives the page's accent colour.
+ *
+ * The root element keeps id="now-playing" so dev-mode.js can anchor its
+ * badge directly beneath the whole card.
+ * ===================================================================== */
+(function presence() {
+  const mount = document.getElementById("now-playing");
+  if (!mount) return;
+  if (!DISCORD_USER_ID || DISCORD_USER_ID === "REPLACE_WITH_YOUR_DISCORD_USER_ID") return;
 
-  // Stay hidden until configured (keeps the widget invisible on a fresh clone)
-  if (!DISCORD_USER_ID || DISCORD_USER_ID === "REPLACE_WITH_YOUR_DISCORD_USER_ID") {
-    return;
-  }
+  // ---- build the card, replacing the old Spotify-only markup -------------
+  const card = document.createElement("div");
+  card.id = "now-playing";
+  card.className = "presence-card";
+  card.hidden = true;
+  card.innerHTML =
+    '<div class="pc-head">' +
+      '<span class="pc-avatar">' +
+        '<img class="pc-av-img" alt="" referrerpolicy="no-referrer" crossorigin="anonymous">' +
+        '<img class="pc-av-deco" alt="" aria-hidden="true" hidden>' +
+        '<span class="pc-status" aria-hidden="true"></span>' +
+      '</span>' +
+      '<span class="pc-id">' +
+        '<span class="pc-name-row">' +
+          '<span class="pc-name"></span>' +
+          '<span class="pc-tag" hidden></span>' +
+        '</span>' +
+        '<span class="pc-sub-row">' +
+          '<span class="pc-user"></span>' +
+          '<span class="pc-platforms" aria-hidden="true"></span>' +
+        '</span>' +
+        '<span class="pc-meta" hidden></span>' +
+        '<span class="pc-badges" aria-hidden="true"></span>' +
+      '</span>' +
+    '</div>' +
+    '<div class="pc-sections"></div>';
+  mount.replaceWith(card);
 
-  const artEl = el.querySelector(".np-art");
-  const labelEl = el.querySelector(".np-label");
-  const statusLabelEl = el.querySelector(".np-status-label");
-  const trackEl = el.querySelector(".np-track");
-  const artistEl = el.querySelector(".np-artist");
-  const fillEl = el.querySelector(".np-fill");
-  const curEl = el.querySelector(".np-cur");
-  const durEl = el.querySelector(".np-dur");
+  const avImg = card.querySelector(".pc-av-img");
+  const avDeco = card.querySelector(".pc-av-deco");
+  const nameEl = card.querySelector(".pc-name");
+  const tagEl = card.querySelector(".pc-tag");
+  const userEl = card.querySelector(".pc-user");
+  const platformsEl = card.querySelector(".pc-platforms");
+  const metaEl = card.querySelector(".pc-meta");
+  const badgesEl = card.querySelector(".pc-badges");
+  const sections = card.querySelector(".pc-sections");
 
-  const STATUS_LABELS = {
-    online: "Online",
-    idle: "Idle",
-    dnd: "Do Not Disturb",
-    offline: "Offline",
-  };
-
-  let latest = null;        // last presence payload
-  let progressTimer = null; // 1s ticker while a track is playing
+  let latest = null;
+  let ticker = null;
   let ws = null;
   let heartbeat = null;
   let reconnectDelay = 1000;
 
+  // ---- small helpers ------------------------------------------------------
   function fmt(ms) {
     const total = Math.max(0, Math.floor(ms / 1000));
     const m = Math.floor(total / 60);
     const s = total % 60;
     return `${m}:${String(s).padStart(2, "0")}`;
   }
+  function elapsedStr(start) {
+    const s = Math.max(0, Math.floor((Date.now() - start) / 1000));
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    return h ? `${h}h ${m}m` : `${m}m`;
+  }
+  function clamp(n, lo, hi) { return Math.min(Math.max(n, lo), hi); }
 
-  function clamp(n, lo, hi) {
-    return Math.min(Math.max(n, lo), hi);
+  function avatarUrl(u) {
+    if (!u || !u.avatar) return "/assets/favicon/avatar.png";
+    const ext = String(u.avatar).startsWith("a_") ? "gif" : "png";
+    return `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${ext}?size=128`;
+  }
+  function emojiUrl(e) {
+    if (!e || !e.id) return null;
+    return `https://cdn.discordapp.com/emojis/${e.id}.${e.animated ? "gif" : "png"}?size=32`;
+  }
+  function assetUrl(appId, asset) {
+    if (!asset) return null;
+    if (String(asset).startsWith("mp:")) return "https://media.discordapp.net/" + asset.slice(3);
+    return `https://cdn.discordapp.com/app-assets/${appId}/${asset}.png`;
+  }
+  function esc(str) {
+    return String(str == null ? "" : str)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function intToHex(n) {
+    return "#" + (Number(n) >>> 0).toString(16).padStart(6, "0").slice(-6);
+  }
+  // Discord server-tag (guild tag) badge image
+  function guildBadgeUrl(pg) {
+    if (!pg || !pg.badge || !pg.identity_guild_id) return null;
+    return `https://cdn.discordapp.com/guild-tag-badges/${pg.identity_guild_id}/${pg.badge}.png?size=24`;
+  }
+  // Tiny inline SVGs for active-platform indicators
+  const PLATFORM_ICONS = {
+    desktop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg>',
+    mobile: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg>',
+    web: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg>'
+  };
+  function platformIcons(d) {
+    let html = "";
+    if (d.active_on_discord_desktop) html += '<span class="pc-plat" title="Desktop">' + PLATFORM_ICONS.desktop + "</span>";
+    if (d.active_on_discord_mobile) html += '<span class="pc-plat" title="Mobile">' + PLATFORM_ICONS.mobile + "</span>";
+    if (d.active_on_discord_web || d.active_on_discord_embedded) html += '<span class="pc-plat" title="Web">' + PLATFORM_ICONS.web + "</span>";
+    return html;
+  }
+  // Classic Discord badges, derived from the public_flags bitfield. (Nitro,
+  // boosting, Quests etc. aren't in public_flags, so they can't appear here.)
+  const BADGE_FLAGS = [
+    [1 << 0, "Discord Staff", "5e74e9b61934fc1f67c65515d1f7e60d"],
+    [1 << 1, "Partnered Server Owner", "3f9748e53446a137a052f3454e2de41e"],
+    [1 << 2, "HypeSquad Events", "bf01d1073931f921909045f3a39fd264"],
+    [1 << 3, "Bug Hunter", "2717692c7dca7289b35297368a940dd0"],
+    [1 << 6, "HypeSquad Bravery", "8a88d63823d8a71cd5e390baa45efa02"],
+    [1 << 7, "HypeSquad Brilliance", "011940fd013da3f7fb926e4a1cd2e618"],
+    [1 << 8, "HypeSquad Balance", "3aa41de486fa12454c3761e8e223442e"],
+    [1 << 9, "Early Supporter", "7060786766c9c840eb3019e725d2b358"],
+    [1 << 14, "Bug Hunter Gold", "848f79194d4be5ff5f81505cbd0ce1e6"],
+    [1 << 17, "Early Verified Bot Developer", "6df5892e0f35b051f8b61eace34f4967"],
+    [1 << 18, "Moderator Programs Alumni", "fee1624003e2fee35cb398e125dc479b"],
+    [1 << 22, "Active Developer", "6bdc42827a38498929a4920da12695d9"]
+  ];
+  function renderBadges(flags) {
+    flags = Number(flags) || 0;
+    let html = "";
+    for (const [bit, name, hash] of BADGE_FLAGS) {
+      if (flags & bit) {
+        html += '<img class="pc-badge" src="https://cdn.discordapp.com/badge-icons/' + hash +
+          '.png" alt="' + esc(name) + '" title="' + esc(name) + '" onerror="this.remove()">';
+      }
+    }
+    return html;
   }
 
-  // ---- snap album-art colour to the active Catppuccin palette ------------
-  // The accent vars are read live from CSS, so this follows whichever flavour
-  // (mocha / macchiato / frappe / latte) is currently active.
+  // ---- album-art → Catppuccin accent (kept from the old widget) -----------
   const ACCENT_VARS = [
     "rosewater", "flamingo", "pink", "mauve", "red", "maroon", "peach",
     "yellow", "green", "teal", "sky", "saphire", "blue", "lavender",
   ];
-
   function hexToRgb(hex) {
     hex = hex.trim().replace("#", "");
     if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
     const n = parseInt(hex, 16);
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
   }
-
   function getThemePalette() {
     const cs = getComputedStyle(document.documentElement);
     const pal = [];
     for (const name of ACCENT_VARS) {
       const v = cs.getPropertyValue("--" + name).trim();
-      if (v.startsWith("#")) {
-        const [r, g, b] = hexToRgb(v);
-        pal.push({ name, r, g, b });
-      }
+      if (v.startsWith("#")) { const [r, g, b] = hexToRgb(v); pal.push({ r, g, b }); }
     }
     return pal;
   }
-
-  // Nearest palette swatch using a redmean-weighted distance (closer to how
-  // the eye judges colour difference than plain RGB distance).
   function nearestAccent(r, g, b) {
     const pal = getThemePalette();
     let best = null, bestD = Infinity;
     for (const c of pal) {
-      const rm = (r + c.r) / 2;
-      const dr = r - c.r, dg = g - c.g, db = b - c.b;
+      const rm = (r + c.r) / 2, dr = r - c.r, dg = g - c.g, db = b - c.b;
       const d = (2 + rm / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rm) / 256) * db * db;
       if (d < bestD) { bestD = d; best = c; }
     }
     return best;
   }
-
-  // ---- album-art accent colour -------------------------------------------
   let lastArtUrl = null;
   function applyAccent(url) {
     if (!url || url === lastArtUrl) return;
@@ -95,111 +183,246 @@ const DISCORD_USER_ID = "1464890289922641993";
     img.onload = () => {
       try {
         const c = document.createElement("canvas");
-        const size = 16;
-        c.width = size;
-        c.height = size;
+        c.width = c.height = 16;
         const ctx = c.getContext("2d", { willReadFrequently: true });
-        ctx.drawImage(img, 0, 0, size, size);
-        const { data } = ctx.getImageData(0, 0, size, size);
+        ctx.drawImage(img, 0, 0, 16, 16);
+        const { data } = ctx.getImageData(0, 0, 16, 16);
         let r = 0, g = 0, b = 0, count = 0;
         for (let i = 0; i < data.length; i += 4) {
-          const a = data[i + 3];
-          if (a < 125) continue;
-          // skip near-black/near-white so the tint stays vivid
+          if (data[i + 3] < 125) continue;
           const lum = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
           if (lum < 24 || lum > 235) continue;
           r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
         }
         if (!count) { resetAccent(); return; }
         r = Math.round(r / count); g = Math.round(g / count); b = Math.round(b / count);
-        // Snap the average album colour to the nearest Catppuccin accent
         const near = nearestAccent(r, g, b);
         const rgb = near ? `${near.r}, ${near.g}, ${near.b}` : `${r}, ${g}, ${b}`;
-        el.style.setProperty("--np-accent", rgb);
-        el.classList.add("has-accent");
-        // Drive the whole page's accent (nav, badges, name, link hovers…)
+        card.style.setProperty("--np-accent", rgb);
+        card.classList.add("has-accent");
         document.documentElement.style.setProperty("--accent-rgb", rgb);
-      } catch (e) {
-        resetAccent(); // tainted canvas / CORS — fall back to theme colour
-      }
+      } catch (e) { resetAccent(); }
     };
     img.onerror = resetAccent;
     img.src = url;
   }
-
   function resetAccent() {
-    el.classList.remove("has-accent");
-    el.style.removeProperty("--np-accent");
-    // Hand the page's accent back to the active theme's pink
+    lastArtUrl = null;
+    card.classList.remove("has-accent");
+    card.style.removeProperty("--np-accent");
     document.documentElement.style.removeProperty("--accent-rgb");
   }
 
-  // ---- rendering ----------------------------------------------------------
-  function stopProgress() {
-    if (progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+  // ---- section (row) builders --------------------------------------------
+  function rowText(kind, title, sub, extra) {
+    return (
+      '<span class="pc-row-text">' +
+        '<span class="pc-row-kind">' + esc(kind) + "</span>" +
+        '<span class="pc-row-title">' + esc(title) + "</span>" +
+        '<span class="pc-row-sub">' + esc(sub) + "</span>" +
+        (extra || "") +
+      "</span>"
+    );
   }
 
-  function tickProgress(spotify) {
-    const start = spotify.timestamps && spotify.timestamps.start;
-    const end = spotify.timestamps && spotify.timestamps.end;
-    if (!start || !end || end <= start) {
-      el.classList.remove("has-progress");
-      return;
+  function customRow(a) {
+    const row = document.createElement("div");
+    row.className = "pc-row pc-custom";
+    const eu = emojiUrl(a.emoji);
+    row.innerHTML =
+      (eu ? '<img class="pc-emoji" src="' + eu + '" alt="">'
+          : '<span class="pc-row-ic pc-dot" aria-hidden="true"></span>') +
+      '<span class="pc-custom-text">' + esc(a.state || "") + "</span>";
+    return row;
+  }
+
+  function spotifyRow(s) {
+    const row = document.createElement("a");
+    row.className = "pc-row pc-spotify";
+    row.target = "_blank";
+    row.rel = "noopener";
+    row.href = s.track_id ? "https://open.spotify.com/track/" + s.track_id : "https://open.spotify.com/";
+    if (s.album) row.title = (s.song || "") + " — " + s.album;
+    if (s.timestamps && s.timestamps.start) row.dataset.start = s.timestamps.start;
+    if (s.timestamps && s.timestamps.end) row.dataset.end = s.timestamps.end;
+    row.innerHTML =
+      (s.album_art_url ? '<img class="pc-art" src="' + esc(s.album_art_url) + '" alt="">' : "") +
+      rowText("Listening to Spotify", s.song || "", s.artist || "",
+        '<span class="pc-progress" aria-hidden="true">' +
+          '<span class="pc-bar"><span class="pc-fill"></span></span>' +
+          '<span class="pc-times"><span class="pc-cur">0:00</span><span class="pc-dur">0:00</span></span>' +
+        "</span>");
+    return row;
+  }
+
+  function activityRow(a) {
+    const isCode = a.name === "Visual Studio Code";
+    const row = document.createElement("div");
+    row.className = "pc-row pc-row--stack " + (isCode ? "pc-dev" : "pc-game");
+    if (a.timestamps && a.timestamps.start) row.dataset.elapsedStart = a.timestamps.start;
+
+    const href = isCode ? "https://github.com/doughmination" : "https://discord.gg/TransRights";
+    const large = a.assets && a.assets.large_image && assetUrl(a.application_id, a.assets.large_image);
+    const small = a.assets && a.assets.small_image && assetUrl(a.application_id, a.assets.small_image);
+    const iconHtml = large
+      ? '<span class="pc-ic-wrap">' +
+          '<img class="pc-row-ic-img" src="' + esc(large) + '" alt="">' +
+          (small ? '<img class="pc-ic-badge" src="' + esc(small) + '" alt="" title="' + esc(a.assets.small_text || "") + '" onerror="this.remove()">' : "") +
+        "</span>"
+      : '<span class="pc-row-ic pc-dot" aria-hidden="true"></span>';
+
+    let kind = isCode ? "Coding" : "Playing " + (a.name || "");
+    if (a.party && a.party.size && a.party.size.length === 2 && a.party.size[1]) {
+      kind += " · " + a.party.size[0] + " of " + a.party.size[1];
     }
-    el.classList.add("has-progress");
-    const now = Date.now();
-    const elapsed = clamp(now - start, 0, end - start);
-    const pct = clamp((elapsed / (end - start)) * 100, 0, 100);
-    fillEl.style.width = pct + "%";
-    curEl.textContent = fmt(elapsed);
-    durEl.textContent = fmt(end - start);
+
+    const main = document.createElement("a");
+    main.className = "pc-row-link";
+    main.target = "_blank";
+    main.rel = "noopener";
+    main.href = href;
+    main.innerHTML = iconHtml +
+      rowText(kind, a.details || (isCode ? "" : a.name) || "",
+              a.state || (a.assets && a.assets.large_text) || "",
+              '<span class="pc-row-elapsed"></span>');
+    row.appendChild(main);
+
+    // Discord only exposes button *labels* (not URLs) via presence, so we
+    // point them at the row's destination (the repo / profile).
+    if (a.buttons && a.buttons.length) {
+      const bwrap = document.createElement("div");
+      bwrap.className = "pc-buttons";
+      a.buttons.forEach(function (label) {
+        const b = document.createElement("a");
+        b.className = "pc-btn";
+        b.target = "_blank";
+        b.rel = "noopener";
+        b.href = href;
+        b.textContent = typeof label === "string" ? label : (label && label.label) || "Open";
+        bwrap.appendChild(b);
+      });
+      row.appendChild(bwrap);
+    }
+    return row;
   }
 
+  function streamRow(a) {
+    const row = document.createElement("a");
+    row.className = "pc-row pc-stream";
+    row.target = "_blank";
+    row.rel = "noopener";
+    row.href = a.url || "https://www.twitch.tv/doughminationgaming";
+    const platform = (a.url && /twitch/i.test(a.url)) ? "Twitch" : "Live";
+    row.innerHTML =
+      '<span class="pc-row-ic pc-dot" aria-hidden="true"></span>' +
+      rowText("Streaming on " + platform, a.details || a.name || "", a.state || "");
+    return row;
+  }
+
+  // ---- render -------------------------------------------------------------
   function render(d) {
     if (!d) return;
+    latest = d;
+
+    const u = d.discord_user || {};
     const status = d.discord_status || "offline";
-    el.dataset.status = status;
+    card.dataset.status = status;
 
-    // Discord status word — always shown (coexists with the track)
-    statusLabelEl.textContent = STATUS_LABELS[status] || "Offline";
-
-    const spotify = d.listening_to_spotify && d.spotify ? d.spotify : null;
-
-    if (spotify) {
-      el.classList.add("is-live");
-      labelEl.textContent = "Now playing";
-      trackEl.textContent = spotify.song || "";
-      artistEl.textContent = spotify.artist || "";
-
-      if (spotify.album_art_url) {
-        artEl.src = spotify.album_art_url;
-        artEl.style.display = "";
-        applyAccent(spotify.album_art_url);
-      } else {
-        artEl.style.display = "none";
-        resetAccent();
-      }
-
-      el.href = spotify.track_id
-        ? `https://open.spotify.com/track/${spotify.track_id}`
-        : "https://open.spotify.com/";
-
-      stopProgress();
-      tickProgress(spotify);
-      progressTimer = setInterval(() => tickProgress(spotify), 1000);
+    avImg.src = avatarUrl(u);
+    const deco = u.avatar_decoration_data;
+    if (deco && deco.asset) {
+      avDeco.src = `https://cdn.discordapp.com/avatar-decoration-presets/${deco.asset}.png?size=160`;
+      avDeco.hidden = false;
     } else {
-      // Not listening — just the Discord status (dot + word in the head)
-      el.classList.remove("is-live", "has-progress");
-      stopProgress();
-      resetAccent();
-      trackEl.textContent = "";
-      artistEl.textContent = "";
-      artEl.style.display = "none";
-      el.href = "https://discord.gg/TransRights";
+      avDeco.hidden = true;
+    }
+    nameEl.textContent = u.display_name || u.global_name || u.username || "Clove";
+    userEl.textContent = u.username ? "@" + u.username : "";
+
+    // gradient display-name styling (Discord's display_name_styles)
+    const styles = u.display_name_styles;
+    if (styles && styles.colors && styles.colors.length) {
+      const cols = styles.colors.map(intToHex);
+      nameEl.style.backgroundImage = "linear-gradient(90deg, " + (cols.length === 1 ? cols[0] + "," + cols[0] : cols.join(", ")) + ")";
+      nameEl.classList.add("is-gradient");
+    } else {
+      nameEl.style.backgroundImage = "";
+      nameEl.classList.remove("is-gradient");
     }
 
-    el.hidden = false;
+    // server tag chip (primary_guild)
+    const pg = u.primary_guild;
+    if (pg && pg.tag && pg.identity_enabled) {
+      const badge = guildBadgeUrl(pg);
+      tagEl.innerHTML = (badge ? '<img class="pc-tag-badge" src="' + badge + '" alt="" onerror="this.remove()">' : "") +
+        '<span class="pc-tag-text">' + esc(pg.tag) + "</span>";
+      tagEl.hidden = false;
+    } else {
+      tagEl.hidden = true;
+    }
+
+    // active-platform indicators
+    platformsEl.innerHTML = platformIcons(d);
+
+    // classic Discord badges (public_flags)
+    badgesEl.innerHTML = renderBadges(u.public_flags);
+
+    // KV store — location (and any other simple kv strings)
+    const loc = d.kv && d.kv.location;
+    if (loc) {
+      metaEl.innerHTML = '<span class="pc-pin" aria-hidden="true">📍</span>' + esc(loc);
+      metaEl.hidden = false;
+    } else {
+      metaEl.hidden = true;
+    }
+
+    const acts = d.activities || [];
+
+    sections.innerHTML = "";
+
+    const custom = acts.find((a) => a.type === 4);
+    if (custom && (custom.state || (custom.emoji && custom.emoji.id))) sections.appendChild(customRow(custom));
+
+    if (d.listening_to_spotify && d.spotify) {
+      sections.appendChild(spotifyRow(d.spotify));
+      applyAccent(d.spotify.album_art_url);
+    } else {
+      resetAccent();
+    }
+
+    acts.filter((a) => a.type === 0).forEach((a) => sections.appendChild(activityRow(a)));
+    acts.filter((a) => a.type === 1).forEach((a) => sections.appendChild(streamRow(a)));
+
+    card.classList.toggle("has-sections", sections.children.length > 0);
+    updateTimes();
+    if (sections.querySelector("[data-start], [data-elapsed-start]")) startTicker();
+    else stopTicker();
+
+    card.hidden = false;
   }
+
+  // ---- time tickers (progress bar + elapsed labels) -----------------------
+  function updateTimes() {
+    const sp = sections.querySelector(".pc-spotify[data-start][data-end]");
+    if (sp) {
+      const start = +sp.dataset.start, end = +sp.dataset.end;
+      if (end > start) {
+        const elapsed = clamp(Date.now() - start, 0, end - start);
+        const fill = sp.querySelector(".pc-fill");
+        const cur = sp.querySelector(".pc-cur");
+        const dur = sp.querySelector(".pc-dur");
+        if (fill) fill.style.width = clamp((elapsed / (end - start)) * 100, 0, 100) + "%";
+        if (cur) cur.textContent = fmt(elapsed);
+        if (dur) dur.textContent = fmt(end - start);
+      }
+    }
+    sections.querySelectorAll("[data-elapsed-start]").forEach((row) => {
+      const lbl = row.querySelector(".pc-row-elapsed");
+      if (lbl) lbl.textContent = elapsedStr(+row.dataset.elapsedStart);
+    });
+  }
+  function startTicker() { if (!ticker) ticker = setInterval(updateTimes, 1000); }
+  function stopTicker() { if (ticker) { clearInterval(ticker); ticker = null; } }
 
   // ---- Lanyard websocket --------------------------------------------------
   function connect() {
@@ -209,47 +432,35 @@ const DISCORD_USER_ID = "1464890289922641993";
       let msg;
       try { msg = JSON.parse(evt.data); } catch (e) { return; }
 
-      // op 1 = Hello: start heartbeat, then subscribe
       if (msg.op === 1) {
         const interval = (msg.d && msg.d.heartbeat_interval) || 30000;
         if (heartbeat) clearInterval(heartbeat);
         heartbeat = setInterval(() => {
           if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ op: 3 }));
         }, interval);
-        ws.send(JSON.stringify({
-          op: 2,
-          d: { subscribe_to_id: DISCORD_USER_ID },
-        }));
+        ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: DISCORD_USER_ID } }));
         return;
       }
 
-      // op 0 = Event: INIT_STATE or PRESENCE_UPDATE
       if (msg.op === 0) {
-        const d = msg.t === "INIT_STATE"
-          ? (msg.d && msg.d[DISCORD_USER_ID]) || msg.d
-          : msg.d;
-        latest = d;
+        const d = msg.t === "INIT_STATE" ? (msg.d && msg.d[DISCORD_USER_ID]) || msg.d : msg.d;
         render(d);
       }
     });
 
     ws.addEventListener("open", () => { reconnectDelay = 1000; });
-
     ws.addEventListener("close", () => {
       if (heartbeat) { clearInterval(heartbeat); heartbeat = null; }
-      stopProgress();
-      // exponential backoff up to 30s
+      stopTicker();
       setTimeout(connect, reconnectDelay);
       reconnectDelay = Math.min(reconnectDelay * 2, 30000);
     });
-
     ws.addEventListener("error", () => { try { ws.close(); } catch (e) {} });
   }
 
   connect();
 
-  // keep the progress bar honest when returning to the tab
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && latest) render(latest);
+    if (!document.hidden && latest) updateTimes();
   });
 })();
