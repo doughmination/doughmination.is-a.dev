@@ -1259,3 +1259,247 @@ body:has(.bot-grid) .hub-header {
   cursor: default;
   filter: drop-shadow(0 0 4px var(--red));
 }
+
+
+/* ============================================================
+   12. WAKATIME / CODING STATS PAGE
+   ============================================================ */
+/* Let the coding-stats page scroll; link hub stays locked */
+html:has(.waka),
+body:has(.waka) {
+  height: auto;
+  min-height: 100dvh;
+  overflow-y: auto;
+}
+
+body:has(.waka) {
+  align-items: flex-start;
+}
+
+.waka {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding-bottom: 4.5rem;
+}
+
+.waka .hub-header {
+  margin-bottom: 1.5rem;
+}
+
+.waka-meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--subtext-0);
+}
+
+.waka-section {
+  background: var(--surface-0);
+  border: 1px solid var(--surface-1);
+  border-radius: 16px;
+  padding: 1.15rem 1.25rem 1.35rem;
+  margin-bottom: 1.1rem;
+}
+
+.waka-section .section-title {
+  text-align: left;
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+}
+
+/* ---- headline total + weekly chart ---- */
+.waka-total {
+  text-align: center;
+}
+
+.waka-total-num {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: rgb(var(--accent-rgb));
+  line-height: 1.1;
+}
+
+.waka-total-sub {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--subtext-0);
+  margin-bottom: 1.1rem;
+}
+
+.waka-week {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  height: 120px;
+}
+
+.waka-day {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  height: 100%;
+}
+
+.waka-day-track {
+  flex: 1;
+  width: 100%;
+  max-width: 34px;
+  display: flex;
+  align-items: flex-end;
+  background: var(--surface-1);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.waka-day-fill {
+  width: 100%;
+  min-height: 3px;
+  background: rgb(var(--accent-rgb));
+  border-radius: 7px 7px 0 0;
+  transition: height 0.5s ease;
+}
+
+.waka-day-label {
+  font-size: 0.66rem;
+  color: var(--subtext-0);
+}
+
+/* ---- ranked horizontal bars (languages / projects / editors / os) ---- */
+.waka-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.waka-bar-row {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.waka-bar-name {
+  font-size: 0.82rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.waka-bar-track {
+  height: 9px;
+  background: var(--surface-1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.waka-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: rgb(var(--accent-rgb));
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.waka-bar-val {
+  font-size: 0.74rem;
+  color: var(--subtext-0);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- two-up grid for editors + OS on wider screens ---- */
+.waka-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+}
+
+.waka-grid2 .waka-section {
+  margin-bottom: 0;
+}
+
+@media (max-width: 560px) {
+  .waka-grid2 { grid-template-columns: 1fr; gap: 0; }
+  .waka-grid2 .waka-section { margin-bottom: 1.1rem; }
+  .waka-bar-row { grid-template-columns: 5.5rem 1fr auto; }
+}
+
+/* ---- empty / setup state ---- */
+.waka-empty {
+  font-size: 0.85rem;
+  color: var(--subtext-0);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.waka-setup {
+  background: var(--surface-0);
+  border: 1px solid var(--surface-1);
+  border-radius: 16px;
+  padding: 1.25rem 1.4rem 1.5rem;
+  text-align: left;
+}
+
+.waka-steps {
+  margin: 0.9rem 0 1.2rem;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.waka-steps code {
+  background: var(--surface-1);
+  padding: 0.05rem 0.35rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.waka-steps a,
+.waka-empty a,
+.waka-credit a {
+  color: rgb(var(--accent-rgb));
+  text-decoration: none;
+}
+
+.waka-steps a:hover,
+.waka-empty a:hover,
+.waka-credit a:hover {
+  text-decoration: underline;
+}
+
+.waka-setup-btn {
+  display: inline-block;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background: rgb(var(--accent-rgb));
+  color: var(--crust);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.waka-setup-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.waka-credit {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--subtext-0);
+  margin: 1.4rem 0 0;
+}
