@@ -70,7 +70,7 @@
       '<span class="dev-mode-pulse" aria-hidden="true"></span>' +
       "<span>Dev Mode</span>";
     document.body.appendChild(badge);
-    
+
     var np = document.getElementById("now-playing");
 
     function reposition() {

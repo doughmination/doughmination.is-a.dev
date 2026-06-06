@@ -3,10 +3,10 @@
 
   // ====== PASTE YOUR EMBEDDABLE JSON SHARE URLS HERE ===================
   var WAKATIME = {
-    codingActivity:   "https://wakatime.com/share/@doughmination/9dcc5b5c-ed3d-4896-bfa3-87737fa70930.json",
-    languages:        "https://wakatime.com/share/@doughmination/8354e3f8-b458-452b-aa06-839f303d4904.json",
-    categories:       "https://wakatime.com/share/@doughmination/c54fcd4e-91b3-46ab-8e7e-82226491ec0f.json",
-    editors:          "https://wakatime.com/share/@doughmination/38dba24b-d2de-4d50-9b09-83642c01c33e.json",
+    codingActivity: "https://wakatime.com/share/@doughmination/9dcc5b5c-ed3d-4896-bfa3-87737fa70930.json",
+    languages: "https://wakatime.com/share/@doughmination/8354e3f8-b458-452b-aa06-839f303d4904.json",
+    categories: "https://wakatime.com/share/@doughmination/c54fcd4e-91b3-46ab-8e7e-82226491ec0f.json",
+    editors: "https://wakatime.com/share/@doughmination/38dba24b-d2de-4d50-9b09-83642c01c33e.json",
     operatingSystems: "https://wakatime.com/share/@doughmination/a69f00cb-e38e-4de1-aa42-eec71dc6d658.json"
   };
   // How many rows to show in each ranked list.
