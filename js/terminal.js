@@ -132,8 +132,23 @@
       const rows = [
         ["help", "show this list"],
         ["socials", "list all socials"],
-        ["<social>", "show a social & ask to open it (e.g. github)"],
+        ["<social>", "show a social & ask to open it (append -open to do directly)"],
         ["<social> -open", "open a social straight away"],
+        ["friends", "people I know"],
+        ["whois <name>", "details about a friend (e.g. ari)"],
+        ["about", "a little about me"],
+        ["hyfetch", "system info, with flair"]
+      ];
+      let out = "Available commands:\n";
+      out += rows.map((r) => "  " + r[0].padEnd(12) + r[1]).join("\n");
+      out += "\n\nTip: type a social's name (try 'socials') to open it.";
+      return { text: out };
+    },
+    ls() {
+      const rows = [
+        ["help", "show this list"],
+        ["socials", "list all socials"],
+        ["<social>", "show a social & ask to open it (append -open to do directly)"],
         ["friends", "people I know"],
         ["whois <name>", "details about a friend (e.g. ari)"],
         ["about", "a little about me"],

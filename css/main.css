@@ -10,7 +10,7 @@
      5. Page nav                (shared, bottom-left)
      6. System badges           (shared, bottom-right)
      7. Theme switcher          (shared, top-right)
-     8. Tech-stack page
+     8. dev-info page
      9. Changelog page
     10. Secret cat modes        (toast + picker modal)
     11. Discord bots page
@@ -620,25 +620,25 @@ body::before {
 
 
 /* ============================================================
-   8. TECH-STACK PAGE
+   8. dev-info PAGE
    ============================================================ */
-/* Let only the tech-stack page scroll; link hub stays locked */
-html:has(.tech-stack),
-body:has(.tech-stack) {
+/* Let only the dev-info page scroll; link hub stays locked */
+html:has(.dev-info),
+body:has(.dev-info) {
   height: auto;
   min-height: 100dvh;
   overflow-y: auto;
 }
 
-body:has(.tech-stack) {
+body:has(.dev-info) {
   align-items: flex-start;
 }
 
-body:has(.tech-stack) .hub {
+body:has(.dev-info) .hub {
   max-width: 860px;
 }
 
-.tech-stack {
+.dev-info {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -1137,7 +1137,7 @@ body:has(.bot-grid) .hub-header {
   }
 
   body,
-  body:has(.tech-stack),
+  body:has(.dev-info),
   body:has(.changelog) {
     flex-direction: column;
     justify-content: flex-start;
@@ -1174,7 +1174,7 @@ body:has(.bot-grid) .hub-header {
 
   /* 2 — Main content */
   .hub,
-  body:has(.tech-stack) .hub,
+  body:has(.dev-info) .hub,
   body:has(.changelog) .hub {
     order: 2;
     width: 100%;
@@ -1222,9 +1222,9 @@ body:has(.bot-grid) .hub-header {
     margin-bottom: 1.5rem;
   }
 
-  /* Keep the tech-stack / changelog content from butting up against
+  /* Keep the dev-info / changelog content from butting up against
      the nav below it */
-  .tech-stack,
+  .dev-info,
   .changelog {
     padding-bottom: 0;
   }
@@ -1262,7 +1262,7 @@ body:has(.bot-grid) .hub-header {
 
 
 /* ============================================================
-   12. WAKATIME / CODING STATS PAGE
+   12. dev-info / CODING STATS PAGE
    ============================================================ */
 /* Let the coding-stats page scroll; link hub stays locked */
 html:has(.waka),

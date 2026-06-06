@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clove Twilight - Tech Stack</title>
+    <title>Clove Twilight - Coding Stats</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/api/api.css">
     <link rel="stylesheet" href="/css/themes/mocha.css">
@@ -15,16 +15,16 @@
     <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg">
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Tech Stack for Clove Twilight" />
-    <meta name="keywords" content="Clove Twilight, Portfolio, Personal, Developer" />
+    <meta name="description" content="What Clove has been coding lately, tracked by dev-info" />
+    <meta name="keywords" content="Portfolio, Personal, Developer, dev-info, Coding Stats" />
     <meta name="author" content="doughmination" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://doughmination.is-a.dev/tech-stack" />
+    <link rel="canonical" href="https://doughmination.is-a.dev/dev-info" />
 
     <!-- Alternate for mobile -->
-    <link rel="alternate" media="only screen and (max-width: 640px)" href="https://doughmination.is-a.dev/tech-stack" />
+    <link rel="alternate" media="only screen and (max-width: 640px)" href="https://doughmination.is-a.dev/dev-info" />
 
     <!-- Theme Color -->
     <meta name="theme-color" content="#f5c2e7" />
@@ -32,41 +32,61 @@
     <!-- Open Graph / Discord / Facebook -->
     <meta property="og:image" content="https://doughmination.is-a.dev/assets/favicon/favicon.png" />
     <meta property="og:site_name" content="doughmination.is-a.dev" />
-    <meta property="og:title" content="Clove Twilight | Tech Stack" />
-    <meta property="og:description" content="Tech Stack for Clove Twilight" />
+    <meta property="og:title" content="Clove Twilight | Coding Stats" />
+    <meta property="og:description" content="What Clove has been coding lately, tracked by dev-info" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://doughmination.is-a.dev/tech-stack" />
+    <meta property="og:url" content="https://doughmination.is-a.dev/dev-info" />
     <meta property="og:locale" content="en_GB" />
 
     <!-- Twitter Card -->
     <meta name="twitter:image" content="https://doughmination.is-a.dev/assets/favicon/favicon.png" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Clove Twilight | Tech Stack" />
-    <meta name="twitter:description" content="Tech Stack for Clove Twilight" />
+    <meta name="twitter:title" content="Clove Twilight | Coding Stats" />
+    <meta name="twitter:description" content="What Clove has been coding lately, tracked by dev-info" />
 </head>
 
 <body>
 
+    <div id="now-playing"></div>
+
     <header class="nav">
         <nav class="nav-links">
             <a class="nav-link" data-href="/">Link Center</a>
-            <a class="nav-link selected" data-href="/tech-stack">Tech Stack</a>
+            <a class="nav-link selected" data-href="/dev-info">Coding Stats</a>
             <a class="nav-link" data-href="/discord-bots">Discord Bots</a>
-            <a class="nav-link" data-href="/wakatime">Coding Stats</a>
         </nav>
     </header>
 
-    <div id="now-playing"></div>
+    <main class="waka">
 
-    <main class="hub">
         <header class="hub-header">
             <img class="pfp" src="/assets/favicon/avatar.png" alt="Clove Twilight avatar">
             <h1>Clove Twilight</h1>
             <h2 class="pronouns">(fae/faer)</h2>
-            <p class="tagline">Tech Stack</p>
+            <p class="tagline">Dev Info</p>
+            <p class="waka-meta" id="waka-meta" hidden></p>
         </header>
 
-        <section class="tech-stack" aria-label="Tech stack">
+        <!-- shown only until the dev-info share URLs are filled in -->
+        <section class="waka-setup" id="waka-setup" hidden>
+            <h2 class="section-title">Almost there</h2>
+            <p class="waka-empty">
+                This page is wired up and ready — it just needs your dev-info
+                <strong>embeddable JSON</strong> share URLs.
+            </p>
+            <ol class="waka-steps">
+                <li>Open <a href="https://dev-info.com/share/embed" target="_blank"
+                        rel="noopener">dev-info.com/share/embed</a>.</li>
+                <li>Create an embed for each of: <em>Coding Activity, Languages, Projects, Editors, Operating
+                        Systems</em>.</li>
+                <li>Choose the <strong>JSON</strong> format and copy each <code>.json</code> URL.</li>
+                <li>Paste them into the <code>dev-info</code> block at the top of <code>/js/dev-info.js</code>.</li>
+            </ol>
+            <a class="waka-setup-btn" href="https://dev-info.com/share/embed" target="_blank" rel="noopener">Open
+                dev-info Share</a>
+        </section>
+
+        <section class="dev-info" aria-label="Tech stack">
             <span class="tech-icon pink" style="--si:url('https://cdn.simpleicons.org/javascript')" role="img"
                 aria-label="JavaScript"></span>
             <span class="tech-icon mauve" style="--si:url('https://cdn.simpleicons.org/openjdk')" role="img"
@@ -156,7 +176,50 @@
             <span class="tech-icon blue" style="--si:url('https://cdn.simpleicons.org/vscodium')" role="img"
                 aria-label="VSCodium"></span>
         </section>
+
+        <!-- the real content; revealed once at least one URL is configured -->
+        <div id="waka-content" hidden>
+
+            <section class="waka-section waka-total" id="waka-total">
+                <div class="waka-total-num" id="waka-total-val">—</div>
+                <div class="waka-total-sub" id="waka-total-sub">total coding time</div>
+                <div class="waka-week" id="waka-week"></div>
+            </section>
+
+            <section class="waka-section" id="waka-section-languages" hidden>
+                <h2 class="section-title">Languages</h2>
+                <div class="waka-bars" id="waka-languages"></div>
+            </section>
+
+            <section class="waka-section" id="waka-section-categories" hidden>
+                <h2 class="section-title">Categories</h2>
+                <div class="waka-bars" id="waka-categories"></div>
+            </section>
+
+            <div class="waka-grid2">
+                <section class="waka-section" id="waka-section-editors" hidden>
+                    <h2 class="section-title">Editors</h2>
+                    <div class="waka-bars" id="waka-editors"></div>
+                </section>
+
+                <section class="waka-section" id="waka-section-os" hidden>
+                    <h2 class="section-title">Operating Systems</h2>
+                    <div class="waka-bars" id="waka-os"></div>
+                </section>
+            </div>
+
+            <p class="waka-credit">Tracked automatically with <a href="https://dev-info.com" target="_blank"
+                    rel="noopener">dev-info</a>.</p>
+        </div>
     </main>
+
+    <aside class="button-wall" aria-label="88x31 buttons">
+        <img src="/assets/88x31/linux.gif" alt="Linux" loading="lazy">
+        <img src="/assets/88x31/microslop.gif" alt="Microslop" loading="lazy">
+        <img src="/assets/88x31/estrogen.gif" alt="Estrogen" loading="lazy">
+        <img src="/assets/88x31/girlsnow.png" alt="Girls Network" loading="lazy">
+        <img src="/assets/88x31/skirt.gif" alt="Skirt" loading="lazy">
+    </aside>
 
     <aside class="badges" aria-label="System badges">
         <span class="badge">
@@ -182,6 +245,7 @@
     <script src="/api/now-playing.js" data-user="1464890289922641993"></script>
     <script src="/js/flavors.js"></script>
     <script src="/js/dev-mode.js"></script>
+    <script src="/js/dev-info.js"></script>
     <script src="/js/site-switcher.js"></script>
 </body>
 
