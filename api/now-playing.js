@@ -1,23 +1,59 @@
-const DISCORD_USER_ID = "1464890289922641993";
-
 /* =====================================================================
- * now-playing.js — a single Discord-style presence card.
+ * now-playing.js — a single Discord-style presence card. (API edition)
  *
  * Base state is a compact profile pill (avatar + name + status dot).
  * It auto-expands a row for whatever is going on, in this order:
- *   custom status · Spotify · development (VSCode) · games · streaming
- * Data comes live from Lanyard over a websocket. Click the header to
- * collapse/expand. Album art still drives the page's accent colour.
+ *   custom status · Spotify · development · games · streaming
+ * Data comes live from Lanyard over a websocket. Album art drives the
+ * card's accent colour.
  *
- * The root element keeps id="now-playing" so dev-mode.js can anchor its
- * badge directly beneath the whole card.
+ * WHICH USER?  The Discord user id is resolved, in priority order, from:
+ *   1. the path        /api/<id>
+ *   2. the query       ?u=<id>   (also ?id= / ?user=)
+ *   3. the hash        #<id>
+ *   4. <script data-user="<id>">  or  <div id="now-playing" data-user="...">
+ *   5. window.NOW_PLAYING_USER_ID
+ * If none resolve, the script does nothing (lets a docs page show through).
+ *
+ * REQUIREMENT: the user must be in the Lanyard Discord (discord.gg/lanyard)
+ * so their presence is tracked. See /api for the full how-to.
+ *
+ * The mount keeps id="now-playing" so other scripts can anchor to it.
  * ===================================================================== */
 (function presence() {
-  const mount = document.getElementById("now-playing");
-  if (!mount) return;
-  if (!DISCORD_USER_ID || DISCORD_USER_ID === "REPLACE_WITH_YOUR_DISCORD_USER_ID") return;
+  "use strict";
 
-  // ---- build the card, replacing the old Spotify-only markup -------------
+  // ---- who are we showing? ------------------------------------------------
+  function valid(id) { return typeof id === "string" && /^\d{5,25}$/.test(id); }
+  function resolveUserId() {
+    const path = location.pathname.match(/\/api\/(\d{5,25})(?:[\/?#]|$)/);
+    if (path) return path[1];
+    const qs = new URLSearchParams(location.search);
+    const q = qs.get("u") || qs.get("id") || qs.get("user");
+    if (valid(q)) return q;
+    if (/^#\d{5,25}$/.test(location.hash)) return location.hash.slice(1);
+    const script = document.currentScript || document.querySelector("script[data-user]");
+    if (script && script.dataset && valid(script.dataset.user)) return script.dataset.user;
+    const m = document.getElementById("now-playing");
+    if (m && m.dataset && valid(m.dataset.user)) return m.dataset.user;
+    if (valid(window.NOW_PLAYING_USER_ID)) return window.NOW_PLAYING_USER_ID;
+    return null;
+  }
+
+  const DISCORD_USER_ID = resolveUserId();
+  const mount = document.getElementById("now-playing");
+  if (!mount || !DISCORD_USER_ID) return;
+
+  // ---- theme: only on standalone api pages (homepage uses data-flavor) ----
+  if (!document.documentElement.getAttribute("data-flavor")) {
+    const t = new URLSearchParams(location.search).get("theme");
+    const themes = ["mocha", "macchiato", "frappe", "latte"];
+    if (!document.documentElement.getAttribute("data-theme")) {
+      document.documentElement.setAttribute("data-theme", themes.indexOf(t) >= 0 ? t : "mocha");
+    }
+  }
+
+  // ---- build the card -----------------------------------------------------
   const card = document.createElement("div");
   card.id = "now-playing";
   card.className = "presence-card";
@@ -60,12 +96,6 @@ const DISCORD_USER_ID = "1464890289922641993";
   const wishlistEl = card.querySelector(".pc-wishlist");
 
   // ---- wishlist (revealed by the star) ------------------------------------
-  // TODO(wishlist): wire up the real Discord wishlist once the endpoint/docs
-  // are known. dstn's /profile only exposes `wishlist_settings` (app IDs +
-  // visibility), not names/icons — so we can't resolve items yet. When the
-  // API is found, fetch it and fill `wishlistItems` with objects shaped like
-  //   { name: "...", url: "https://...", icon: "https://..." (optional) }
-  // then call renderWishlist(); the star toggle + panel below already work.
   let wishlistItems = null;
   function renderWishlist() {
     if (!wishlistEl) return;
@@ -116,7 +146,7 @@ const DISCORD_USER_ID = "1464890289922641993";
   function clamp(n, lo, hi) { return Math.min(Math.max(n, lo), hi); }
 
   function avatarUrl(u) {
-    if (!u || !u.avatar) return "/assets/favicon/avatar.png";
+    if (!u || !u.avatar) return "https://cdn.discordapp.com/embed/avatars/0.png";
     const ext = String(u.avatar).startsWith("a_") ? "gif" : "png";
     return `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${ext}?size=128`;
   }
@@ -136,12 +166,10 @@ const DISCORD_USER_ID = "1464890289922641993";
   function intToHex(n) {
     return "#" + (Number(n) >>> 0).toString(16).padStart(6, "0").slice(-6);
   }
-  // Discord server-tag (guild tag) badge image
   function guildBadgeUrl(pg) {
     if (!pg || !pg.badge || !pg.identity_guild_id) return null;
     return `https://cdn.discordapp.com/guild-tag-badges/${pg.identity_guild_id}/${pg.badge}.png?size=24`;
   }
-  // Tiny inline SVGs for active-platform indicators
   const PLATFORM_ICONS = {
     desktop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg>',
     mobile: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg>',
@@ -154,8 +182,6 @@ const DISCORD_USER_ID = "1464890289922641993";
     if (d.active_on_discord_web || d.active_on_discord_embedded) html += '<span class="pc-plat" title="Web">' + PLATFORM_ICONS.web + "</span>";
     return html;
   }
-  // Classic Discord badges, derived from the public_flags bitfield. (Nitro,
-  // boosting, Quests etc. aren't in public_flags, so they can't appear here.)
   const BADGE_FLAGS = [
     [1 << 0, "Discord Staff", "5e74e9b61934fc1f67c65515d1f7e60d"],
     [1 << 1, "Partnered Server Owner", "3f9748e53446a137a052f3454e2de41e"],
@@ -183,7 +209,7 @@ const DISCORD_USER_ID = "1464890289922641993";
   }
 
   // Richer badges via dstn.to — Nitro, boosts, quests, orbs… everything
-  // Discord actually shows, which public_flags (0 for most of us) can't give.
+  // Discord actually shows, which public_flags (0 for most) can't give.
   let dstnBadges = null;
   let lastFlags = 0;
   function renderDstnBadges() {
@@ -203,8 +229,6 @@ const DISCORD_USER_ID = "1464890289922641993";
     n = Number(n) >>> 0;
     return ((n >> 16) & 255) + ", " + ((n >> 8) & 255) + ", " + (n & 255);
   }
-  // Use the Discord profile gradient (theme_colors) as the card's tint,
-  // falling back to the Catppuccin surface when it isn't available.
   function applyProfileGradient(colors) {
     if (!colors || colors.length < 2) return;
     card.style.setProperty("--pc-grad-1-rgb", rgbTriplet(colors[0]));
@@ -224,7 +248,7 @@ const DISCORD_USER_ID = "1464890289922641993";
       .catch(function () {});
   }
 
-  // ---- album-art → Catppuccin accent (kept from the old widget) -----------
+  // ---- album-art → Catppuccin accent --------------------------------------
   const ACCENT_VARS = [
     "rosewater", "flamingo", "pink", "mauve", "red", "maroon", "peach",
     "yellow", "green", "teal", "sky", "saphire", "blue", "lavender",
@@ -336,13 +360,14 @@ const DISCORD_USER_ID = "1464890289922641993";
     return row;
   }
 
+  // Generic activity row (type 0). Discord presence exposes no link for
+  // games or apps, so this renders as a non-clickable card.
   function activityRow(a) {
-    const isCode = a.name === "Visual Studio Code";
+    const isCode = /visual studio code|vscode/i.test(a.name || "");
     const row = document.createElement("div");
     row.className = "pc-row pc-row--stack " + (isCode ? "pc-dev" : "pc-game");
     if (a.timestamps && a.timestamps.start) row.dataset.elapsedStart = a.timestamps.start;
 
-    const href = isCode ? "https://github.com/doughmination" : "https://discord.gg/TransRights";
     const large = a.assets && a.assets.large_image && assetUrl(a.application_id, a.assets.large_image);
     const small = a.assets && a.assets.small_image && assetUrl(a.application_id, a.assets.small_image);
     const iconHtml = large
@@ -357,28 +382,22 @@ const DISCORD_USER_ID = "1464890289922641993";
       kind += " · " + a.party.size[0] + " of " + a.party.size[1];
     }
 
-    const main = document.createElement("a");
+    const main = document.createElement("div");
     main.className = "pc-row-link";
-    main.target = "_blank";
-    main.rel = "noopener";
-    main.href = href;
     main.innerHTML = iconHtml +
       rowText(kind, a.details || (isCode ? "" : a.name) || "",
               a.state || (a.assets && a.assets.large_text) || "",
               '<span class="pc-row-elapsed"></span>');
     row.appendChild(main);
 
-    // Discord only exposes button *labels* (not URLs) via presence, so we
-    // point them at the row's destination (the repo / profile).
+    // Discord only exposes button *labels* (not URLs) via presence, so these
+    // are shown as plain (non-clickable) chips.
     if (a.buttons && a.buttons.length) {
       const bwrap = document.createElement("div");
       bwrap.className = "pc-buttons";
       a.buttons.forEach(function (label) {
-        const b = document.createElement("a");
+        const b = document.createElement("span");
         b.className = "pc-btn";
-        b.target = "_blank";
-        b.rel = "noopener";
-        b.href = href;
         b.textContent = typeof label === "string" ? label : (label && label.label) || "Open";
         bwrap.appendChild(b);
       });
@@ -388,12 +407,16 @@ const DISCORD_USER_ID = "1464890289922641993";
   }
 
   function streamRow(a) {
-    const row = document.createElement("a");
+    const hasUrl = !!a.url;
+    const row = document.createElement(hasUrl ? "a" : "div");
     row.className = "pc-row pc-stream";
-    row.target = "_blank";
-    row.rel = "noopener";
-    row.href = a.url || "https://www.twitch.tv/doughminationgaming";
-    const platform = (a.url && /twitch/i.test(a.url)) ? "Twitch" : "Live";
+    if (hasUrl) {
+      row.target = "_blank";
+      row.rel = "noopener";
+      row.href = a.url;
+    }
+    const platform = (a.url && /twitch/i.test(a.url)) ? "Twitch"
+                   : (a.url && /youtube/i.test(a.url)) ? "YouTube" : "Live";
     row.innerHTML =
       '<span class="pc-row-ic pc-dot" aria-hidden="true"></span>' +
       rowText("Streaming on " + platform, a.details || a.name || "", a.state || "");
@@ -417,10 +440,9 @@ const DISCORD_USER_ID = "1464890289922641993";
     } else {
       avDeco.hidden = true;
     }
-    nameEl.textContent = u.display_name || u.global_name || u.username || "Clove";
+    nameEl.textContent = u.display_name || u.global_name || u.username || "Discord User";
     userEl.textContent = u.username ? "@" + u.username : "";
 
-    // gradient display-name styling (Discord's display_name_styles)
     const styles = u.display_name_styles;
     if (styles && styles.colors && styles.colors.length) {
       const cols = styles.colors.map(intToHex);
@@ -431,7 +453,6 @@ const DISCORD_USER_ID = "1464890289922641993";
       nameEl.classList.remove("is-gradient");
     }
 
-    // server tag chip (primary_guild)
     const pg = u.primary_guild;
     if (pg && pg.tag && pg.identity_enabled) {
       const badge = guildBadgeUrl(pg);
@@ -442,14 +463,11 @@ const DISCORD_USER_ID = "1464890289922641993";
       tagEl.hidden = true;
     }
 
-    // active-platform indicators
     platformsEl.innerHTML = platformIcons(d);
 
-    // Discord badges — dstn's rich set if loaded, else public_flags
     lastFlags = u.public_flags || 0;
     paintBadges();
 
-    // KV store — location (and any other simple kv strings)
     const loc = d.kv && d.kv.location;
     if (loc) {
       metaEl.innerHTML = '<span class="pc-pin" aria-hidden="true">📍</span>' + esc(loc);

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Now-Playing API · doughmination</title>
+
+  <!-- pick the Catppuccin flavor before paint (?theme=, default mocha) -->
+  <script>
+    (function () {
+      var p = new URLSearchParams(location.search);
+      var t = p.get('theme');
+      var ok = ['mocha', 'macchiato', 'frappe', 'latte'];
+      document.documentElement.setAttribute('data-theme', ok.indexOf(t) >= 0 ? t : 'mocha');
+      // card mode if a user id was passed, else docs mode
+      var id = p.get('u') || p.get('id') || p.get('user') ||
+        (/^#\d{5,25}$/.test(location.hash) ? location.hash.slice(1) : '');
+      document.documentElement.setAttribute('data-mode', /^\d{5,25}$/.test(id) ? 'card' : 'docs');
+    })();
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg">
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/api/api.css">
+
+  <meta name="description" content="A tiny live Discord presence API — drop in a user ID and get a Now-Playing card. Powered by Lanyard.">
+  <meta property="og:title" content="Now-Playing API · doughmination">
+  <meta property="og:description" content="Drop in a Discord user ID, get a live Now-Playing card. Free for friends.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://doughmination.is-a.dev/api">
+
+  <style>
+    /* ---- docs-page chrome (the card itself lives in api.css) ---- */
+    html[data-mode="card"] .docs { display: none; }
+    html[data-mode="docs"] .api-stage { display: none; }
+
+    .docs {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3.2rem 1.25rem 5rem;
+      line-height: 1.6;
+    }
+    .docs h1 {
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      margin: 0 0 0.3rem;
+      color: rgb(var(--accent-rgb));
+      letter-spacing: -0.02em;
+    }
+    .docs .lede { color: var(--subtext-1); font-size: 1.05rem; margin: 0 0 2rem; }
+    .docs h2 {
+      font-size: 1.15rem;
+      margin: 2.4rem 0 0.7rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--surface-0);
+      padding-bottom: 0.35rem;
+    }
+    .docs p { color: var(--subtext-1); margin: 0.6rem 0; }
+    .docs a { color: rgb(var(--accent-rgb)); }
+    .docs ol, .docs ul { color: var(--subtext-1); padding-left: 1.3rem; }
+    .docs li { margin: 0.3rem 0; }
+    .docs code {
+      font-family: 'Comic Code', ui-monospace, monospace;
+      background: var(--surface-0);
+      color: var(--text);
+      padding: 0.1rem 0.4rem;
+      border-radius: 6px;
+      font-size: 0.88em;
+    }
+    .docs pre {
+      background: var(--crust);
+      border: 1px solid var(--surface-0);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      overflow-x: auto;
+      margin: 0.8rem 0;
+    }
+    .docs pre code { background: none; padding: 0; font-size: 0.82rem; color: var(--subtext-1); line-height: 1.5; }
+    .badge-pill {
+      display: inline-block;
+      background: var(--surface-0);
+      color: var(--subtext-0);
+      border-radius: 999px;
+      padding: 0.15rem 0.7rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* ---- the interactive try-it box ---- */
+    .tryit {
+      background: var(--mantle);
+      border: 1px solid var(--surface-0);
+      border-radius: 16px;
+      padding: 1.1rem 1.2rem 1.3rem;
+      margin: 1rem 0 0.6rem;
+    }
+    .tryit label { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--subtext-0); margin-bottom: 0.4rem; }
+    .tryit-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .tryit input {
+      flex: 1; min-width: 200px;
+      background: var(--crust);
+      border: 1px solid var(--surface-1);
+      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+      color: var(--text);
+      font: inherit;
+      outline: none;
+    }
+    .tryit input:focus { border-color: rgb(var(--accent-rgb)); }
+    .tryit button {
+      background: rgb(var(--accent-rgb));
+      color: var(--crust);
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.2rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, filter 0.12s ease;
+    }
+    .tryit button:hover { transform: translateY(-1px); filter: brightness(1.08); }
+    .tryit .themes { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    .swatch {
+      border: 2px solid transparent;
+      border-radius: 8px;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.72rem;
+      cursor: pointer;
+      background: var(--surface-0);
+      color: var(--subtext-1);
+    }
+    .swatch[aria-pressed="true"] { border-color: rgb(var(--accent-rgb)); color: var(--text); }
+    .share { margin-top: 0.9rem; font-size: 0.82rem; color: var(--subtext-0); word-break: break-all; }
+    .share code { user-select: all; }
+
+    .home-link { display: inline-block; margin-top: 2.5rem; font-size: 0.85rem; }
+
+    /* card-mode "back to docs" affordance */
+    .api-stage .back {
+      position: fixed; top: 1rem; left: 1rem;
+      font-size: 0.8rem; color: var(--subtext-0); text-decoration: none;
+      background: var(--surface-0); padding: 0.3rem 0.7rem; border-radius: 999px;
+    }
+    .api-empty { display: none; }
+    html[data-mode="card"] .api-empty.show { display: block; }
+  </style>
+</head>
+
+<body class="api-body">
+
+  <!-- ========================= CARD MODE (?u=ID) ========================= -->
+  <div class="api-stage">
+    <a class="back" href="/api">← API docs</a>
+    <div id="now-playing"></div>
+    <p class="api-empty">
+      No presence yet. If this stays empty, the user probably hasn't joined
+      <a href="https://discord.gg/lanyard" target="_blank" rel="noopener">discord.gg/lanyard</a>
+      yet — that's what lets the card track them.
+    </p>
+  </div>
+
+  <!-- ========================= DOCS MODE ========================= -->
+  <main class="docs">
+    <span class="badge-pill">live · free for friends</span>
+    <h1>Now-Playing API</h1>
+    <p class="lede">
+      The same Discord presence card from my homepage — but pointed at <em>your</em>
+      Discord. Give it your user ID and you get a live card with your status, Spotify,
+      games, what you're coding, badges, the lot. No accounts, no keys, no Google Sheet.
+    </p>
+
+    <div class="tryit">
+      <label for="uid">Your Discord user ID</label>
+      <div class="tryit-row">
+        <input id="uid" inputmode="numeric" placeholder="e.g. 1464890289922641993" autocomplete="off">
+        <button id="go" type="button">Show my card →</button>
+      </div>
+      <div class="themes" id="themes" role="group" aria-label="theme">
+        <button class="swatch" data-t="mocha" aria-pressed="true">Mocha</button>
+        <button class="swatch" data-t="macchiato" aria-pressed="false">Macchiato</button>
+        <button class="swatch" data-t="frappe" aria-pressed="false">Frappé</button>
+        <button class="swatch" data-t="latte" aria-pressed="false">Latte</button>
+      </div>
+      <div class="share" id="share" hidden>Share link: <code id="shareurl"></code></div>
+    </div>
+
+    <h2>1. Join Lanyard (one time)</h2>
+    <p>
+      The card reads your presence through <a href="https://github.com/Phineas/lanyard" target="_blank" rel="noopener">Lanyard</a>,
+      which only tracks people in its Discord server. So join once and leave it —
+      <a href="https://discord.gg/lanyard" target="_blank" rel="noopener">discord.gg/lanyard</a>.
+      That's the only setup step. (If your card is blank, this is almost always why.)
+    </p>
+
+    <h2>2. Grab your user ID</h2>
+    <p>
+      In Discord: <strong>Settings → Advanced → Developer Mode</strong> (turn it on),
+      then right-click your name and <strong>Copy User ID</strong>. It's a long number
+      like <code>1464890289922641993</code>.
+    </p>
+
+    <h2>3. Use your card</h2>
+    <p>Three ways to point it at your ID — all do the same thing:</p>
+    <pre><code>https://doughmination.is-a.dev/api/YOUR_ID      ← prettiest
+https://doughmination.is-a.dev/api/?u=YOUR_ID
+https://doughmination.is-a.dev/api/#YOUR_ID</code></pre>
+    <p>Pick a theme by adding <code>?theme=</code> — <code>mocha</code> (default),
+      <code>macchiato</code>, <code>frappe</code>, or <code>latte</code>:</p>
+    <pre><code>https://doughmination.is-a.dev/api/YOUR_ID?theme=latte</code></pre>
+
+    <h2>Embed it anywhere</h2>
+    <p>Drop it into Notion, a website, an OBS browser source, a README iframe — anywhere that takes HTML or a URL:</p>
+    <pre><code>&lt;iframe
+  src="https://doughmination.is-a.dev/api/YOUR_ID"
+  style="border:0;width:340px;height:360px"
+  title="my Discord presence"&gt;&lt;/iframe&gt;</code></pre>
+    <p>
+      Want it on your own page without the iframe? Add a mount + the two files and
+      pass your ID via <code>data-user</code>:
+    </p>
+    <pre><code>&lt;link rel="stylesheet" href="https://doughmination.is-a.dev/api/api.css"&gt;
+&lt;div id="now-playing"&gt;&lt;/div&gt;
+&lt;script src="https://doughmination.is-a.dev/api/now-playing.js"
+        data-user="YOUR_ID"&gt;&lt;/script&gt;</code></pre>
+
+    <h2>What it shows</h2>
+    <p>
+      Avatar, decoration &amp; status dot · display name (incl. Discord's gradient name styles) ·
+      server tag · active platforms (desktop/mobile/web) · Discord badges (Nitro, boosts, etc.
+      via dstn) · custom status · live Spotify with a progress bar · what game you're playing ·
+      what you're coding (VS Code) · streaming. The card auto-tints to your Spotify album art.
+    </p>
+
+    <h2>Notes &amp; limits</h2>
+    <ul>
+      <li>Everything is read-only and public — it only shows what Lanyard already exposes for your account.</li>
+      <li>Discord doesn't share activity button <em>URLs</em>, so those show as plain labels.</li>
+      <li>If you leave the Lanyard server, the card goes quiet.</li>
+      <li>It's a static page calling Lanyard's public API directly from your browser — nothing of yours is stored here.</li>
+    </ul>
+
+    <a class="home-link" href="/">← back to doughmination.is-a.dev</a>
+  </main>
+
+  <script src="/api/now-playing.js"></script>
+  <script>
+    (function () {
+      var input = document.getElementById('uid');
+      var go = document.getElementById('go');
+      var themes = document.getElementById('themes');
+      var share = document.getElementById('share');
+      var shareurl = document.getElementById('shareurl');
+      var theme = document.documentElement.getAttribute('data-theme') || 'mocha';
+
+      function clean(v) { return (v || '').replace(/\D/g, ''); }
+      function update() {
+        var id = clean(input.value);
+        if (id.length >= 5) {
+          var url = location.origin + '/api/' + id + (theme !== 'mocha' ? '?theme=' + theme : '');
+          shareurl.textContent = url;
+          share.hidden = false;
+        } else {
+          share.hidden = true;
+        }
+      }
+      function submit() {
+        var id = clean(input.value);
+        if (id.length < 5) { input.focus(); return; }
+        location.href = '/api/?u=' + id + (theme !== 'mocha' ? '&theme=' + theme : '');
+      }
+
+      go.addEventListener('click', submit);
+      input.addEventListener('input', update);
+      input.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+
+      themes.addEventListener('click', function (e) {
+        var b = e.target.closest('.swatch'); if (!b) return;
+        theme = b.dataset.t;
+        document.documentElement.setAttribute('data-theme', theme);
+        Array.prototype.forEach.call(themes.children, function (c) {
+          c.setAttribute('aria-pressed', c === b ? 'true' : 'false');
+        });
+        update();
+      });
+
+      // sync swatch highlight to the active theme on load
+      Array.prototype.forEach.call(themes.children, function (c) {
+        c.setAttribute('aria-pressed', c.dataset.t === theme ? 'true' : 'false');
+      });
+
+      // card mode: reveal the "not tracked" hint if nothing renders in time
+      if (document.documentElement.getAttribute('data-mode') === 'card') {
+        setTimeout(function () {
+          var card = document.querySelector('.presence-card');
+          if (!card || card.hidden) {
+            var hint = document.querySelector('.api-empty');
+            if (hint) hint.classList.add('show');
+          }
+        }, 6000);
+      }
+    })();
+  </script>
+</body>
+
+</html>

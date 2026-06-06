@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>doughmination</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg">
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/api/api.css">
+
+  <!-- GitHub Pages serves this for any unknown path. We use it to make the
+       pretty /api/<id> URLs render the Now-Playing card. Anything else is a
+       genuine 404. -->
+  <script>
+    (function () {
+      var m = location.pathname.match(/^\/api\/(\d{5,25})\/?$/);
+      var p = new URLSearchParams(location.search);
+      var t = p.get('theme');
+      var ok = ['mocha', 'macchiato', 'frappe', 'latte'];
+      document.documentElement.setAttribute('data-theme', ok.indexOf(t) >= 0 ? t : 'mocha');
+      document.documentElement.setAttribute('data-mode', m ? 'card' : '404');
+    })();
+  </script>
+
+  <style>
+    html[data-mode="card"] .nf { display: none; }
+    html[data-mode="404"] .api-stage { display: none; }
+
+    .nf {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      gap: 0.4rem;
+    }
+    .nf h1 { font-size: 4rem; margin: 0; color: rgb(var(--accent-rgb)); }
+    .nf p { color: var(--subtext-1); margin: 0.2rem 0; }
+    .nf a { color: rgb(var(--accent-rgb)); }
+    .nf .row { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center; }
+
+    .api-stage .back {
+      position: fixed; top: 1rem; left: 1rem;
+      font-size: 0.8rem; color: var(--subtext-0); text-decoration: none;
+      background: var(--surface-0); padding: 0.3rem 0.7rem; border-radius: 999px;
+    }
+    .api-empty { display: none; }
+    html[data-mode="card"] .api-empty.show { display: block; }
+  </style>
+</head>
+
+<body class="api-body">
+
+  <!-- /api/<id> → render the card -->
+  <div class="api-stage">
+    <a class="back" href="/api">← API docs</a>
+    <div id="now-playing"></div>
+    <p class="api-empty">
+      No presence yet. If this stays empty, the user probably hasn't joined
+      <a href="https://discord.gg/lanyard" target="_blank" rel="noopener">discord.gg/lanyard</a>
+      yet — that's what lets the card track them.
+    </p>
+  </div>
+
+  <!-- everything else → a real 404 -->
+  <div class="nf">
+    <h1>404</h1>
+    <p>That page wandered off.</p>
+    <div class="row">
+      <a href="/">← home</a>
+      <a href="/api">Now-Playing API</a>
+    </div>
+  </div>
+
+  <script src="/api/now-playing.js"></script>
+  <script>
+    if (document.documentElement.getAttribute('data-mode') === 'card') {
+      setTimeout(function () {
+        var card = document.querySelector('.presence-card');
+        if (!card || card.hidden) {
+          var hint = document.querySelector('.api-empty');
+          if (hint) hint.classList.add('show');
+        }
+      }, 6000);
+    }
+  </script>
+</body>
+
+</html>
