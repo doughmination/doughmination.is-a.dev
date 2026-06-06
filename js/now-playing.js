@@ -41,8 +41,10 @@ const DISCORD_USER_ID = "1464890289922641993";
         '<span class="pc-meta" hidden></span>' +
         '<span class="pc-badges" aria-hidden="true"></span>' +
       '</span>' +
+      '<button class="pc-star" type="button" aria-label="show wishlist" title="wishlist">★</button>' +
     '</div>' +
-    '<div class="pc-sections"></div>';
+    '<div class="pc-sections"></div>' +
+    '<div class="pc-wishlist" id="pc-wishlist"></div>';
   mount.replaceWith(card);
 
   const avImg = card.querySelector(".pc-av-img");
@@ -54,6 +56,43 @@ const DISCORD_USER_ID = "1464890289922641993";
   const metaEl = card.querySelector(".pc-meta");
   const badgesEl = card.querySelector(".pc-badges");
   const sections = card.querySelector(".pc-sections");
+  const starBtn = card.querySelector(".pc-star");
+  const wishlistEl = card.querySelector(".pc-wishlist");
+
+  // ---- wishlist (revealed by the star) ------------------------------------
+  // TODO(wishlist): wire up the real Discord wishlist once the endpoint/docs
+  // are known. dstn's /profile only exposes `wishlist_settings` (app IDs +
+  // visibility), not names/icons — so we can't resolve items yet. When the
+  // API is found, fetch it and fill `wishlistItems` with objects shaped like
+  //   { name: "...", url: "https://...", icon: "https://..." (optional) }
+  // then call renderWishlist(); the star toggle + panel below already work.
+  let wishlistItems = null;
+  function renderWishlist() {
+    if (!wishlistEl) return;
+    if (wishlistItems && wishlistItems.length) {
+      wishlistEl.innerHTML = '<div class="pc-wishlist-title">Wishlist</div>' +
+        wishlistItems.map(function (w) {
+          const inner =
+            (w.icon ? '<img class="pc-wl-ic" src="' + esc(w.icon) + '" alt="">' : "") +
+            '<span class="pc-wl-name">' + esc(w.name || "") + "</span>";
+          return w.url
+            ? '<a class="pc-wl-item" href="' + esc(w.url) + '" target="_blank" rel="noopener">' + inner + "</a>"
+            : '<span class="pc-wl-item">' + inner + "</span>";
+        }).join("");
+    } else {
+      wishlistEl.innerHTML = '<div class="pc-wishlist-title">Wishlist</div>' +
+        '<p class="pc-wl-empty">coming soon ✨</p>';
+    }
+  }
+  if (starBtn) {
+    starBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      const open = card.classList.toggle("show-wishlist");
+      starBtn.classList.toggle("on", open);
+      starBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) renderWishlist();
+    });
+  }
 
   let latest = null;
   let ticker = null;
@@ -141,6 +180,48 @@ const DISCORD_USER_ID = "1464890289922641993";
       }
     }
     return html;
+  }
+
+  // Richer badges via dstn.to — Nitro, boosts, quests, orbs… everything
+  // Discord actually shows, which public_flags (0 for most of us) can't give.
+  let dstnBadges = null;
+  let lastFlags = 0;
+  function renderDstnBadges() {
+    return dstnBadges.map(function (b) {
+      const img = '<img class="pc-badge" src="https://cdn.discordapp.com/badge-icons/' + esc(b.icon) +
+        '.png" alt="' + esc(b.description || b.id) + '" title="' + esc(b.description || b.id) + '" onerror="this.remove()">';
+      return b.link
+        ? '<a class="pc-badge-link" href="' + esc(b.link) + '" target="_blank" rel="noopener">' + img + "</a>"
+        : img;
+    }).join("");
+  }
+  function paintBadges() {
+    if (!badgesEl) return;
+    badgesEl.innerHTML = (dstnBadges && dstnBadges.length) ? renderDstnBadges() : renderBadges(lastFlags);
+  }
+  function rgbTriplet(n) {
+    n = Number(n) >>> 0;
+    return ((n >> 16) & 255) + ", " + ((n >> 8) & 255) + ", " + (n & 255);
+  }
+  // Use the Discord profile gradient (theme_colors) as the card's tint,
+  // falling back to the Catppuccin surface when it isn't available.
+  function applyProfileGradient(colors) {
+    if (!colors || colors.length < 2) return;
+    card.style.setProperty("--pc-grad-1-rgb", rgbTriplet(colors[0]));
+    card.style.setProperty("--pc-grad-2-rgb", rgbTriplet(colors[1]));
+    card.classList.add("has-profile-grad");
+  }
+  function loadDstn() {
+    fetch("https://dcdn.dstn.to/profile/" + DISCORD_USER_ID)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j) return;
+        if (Array.isArray(j.badges)) { dstnBadges = j.badges; paintBadges(); }
+        if (j.user_profile && Array.isArray(j.user_profile.theme_colors)) {
+          applyProfileGradient(j.user_profile.theme_colors);
+        }
+      })
+      .catch(function () {});
   }
 
   // ---- album-art → Catppuccin accent (kept from the old widget) -----------
@@ -364,8 +445,9 @@ const DISCORD_USER_ID = "1464890289922641993";
     // active-platform indicators
     platformsEl.innerHTML = platformIcons(d);
 
-    // classic Discord badges (public_flags)
-    badgesEl.innerHTML = renderBadges(u.public_flags);
+    // Discord badges — dstn's rich set if loaded, else public_flags
+    lastFlags = u.public_flags || 0;
+    paintBadges();
 
     // KV store — location (and any other simple kv strings)
     const loc = d.kv && d.kv.location;
@@ -459,6 +541,7 @@ const DISCORD_USER_ID = "1464890289922641993";
   }
 
   connect();
+  loadDstn();
 
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden && latest) updateTimes();

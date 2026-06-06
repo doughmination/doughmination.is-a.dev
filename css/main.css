@@ -1695,15 +1695,16 @@ a.pc-row:hover,
   border: none;
   padding: 0.1rem 0.5rem;
   gap: 0.4rem;
+  align-items: flex-start;
 }
-.pc-emoji { width: 18px; height: 18px; flex-shrink: 0; }
+.pc-emoji { width: 18px; height: 18px; flex-shrink: 0; margin-top: 0.05rem; }
 .pc-custom-text {
   font-size: 0.74rem;
   color: var(--subtext-0);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   max-width: 230px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
 }
 
 /* spotify progress */
@@ -2096,3 +2097,68 @@ body.term-chrome-in .button-wall { transform: translateX(-50%); }
   font-size: 0.62rem;
 }
 .hf-info { margin: 0; white-space: pre; }
+
+
+/* ---- terminal: whois card ---- */
+.t-whois { display: flex; flex-direction: column; gap: 0.3rem; }
+.t-whois-name { font-size: 0.92rem; }
+
+
+/* dstn badge links */
+.pc-badge-link { display: inline-flex; line-height: 0; }
+
+
+/* ---- presence card: wishlist star + panel ---- */
+.pc-star {
+  margin-left: auto;
+  align-self: flex-start;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--subtext-0);
+  padding: 0.1rem 0.15rem;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.pc-star:hover { color: rgb(var(--accent-rgb)); transform: scale(1.12); }
+.pc-star.on { color: var(--yellow); }
+
+.pc-wishlist { display: none; }
+.presence-card.show-wishlist .pc-wishlist {
+  display: block;
+  border-top: 1px solid var(--surface-1);
+  margin: 0 0.6rem;
+  padding: 0.6rem 0 0.7rem;
+}
+.pc-wishlist-title {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--subtext-0);
+  margin-bottom: 0.45rem;
+}
+.pc-wl-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text);
+}
+a.pc-wl-item:hover { background: var(--mantle); }
+.pc-wl-ic { width: 22px; height: 22px; border-radius: 5px; object-fit: cover; }
+.pc-wl-name { font-size: 0.8rem; }
+.pc-wl-empty { font-size: 0.78rem; color: var(--subtext-0); margin: 0; }
+
+
+/* ---- presence card: Discord profile gradient (Catppuccin is the fallback) ---- */
+.presence-card.has-profile-grad {
+  background: linear-gradient(180deg, rgb(var(--pc-grad-1-rgb)) 0%, rgb(var(--pc-grad-2-rgb)) 100%);
+}
+.presence-card.has-profile-grad:not(.has-accent) {
+  border-color: rgba(var(--pc-grad-1-rgb), 0.6);
+}
+/* keep the inner panels as dark cards on the gradient, like Discord */
+.presence-card.has-profile-grad .pc-row { background: rgba(17, 17, 27, 0.55); }
