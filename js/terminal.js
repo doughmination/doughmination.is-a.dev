@@ -18,7 +18,7 @@
     bluesky: { label: "Bluesky", sub: "@doughmination.win", url: "https://bsky.app/profile/doughmination.win", aliases: ["bsky"] },
     linkedin: { label: "LinkedIn", sub: "Clove Twilight", url: "https://www.linkedin.com/in/estrogen/" },
     spotify: { label: "Spotify", sub: "doughmination", url: "https://open.spotify.com/user/x060f5w4ftwv8zc8fi9662t70" },
-    discord: { label: "Discord", sub: "Girls Discord Server", url: "https://discord.gg/TransRights" },
+    discord: { label: "Discord", sub: "Doughmination", url: "https://discord.com/" },
     twitch: { label: "Twitch", sub: "@doughminationgaming", url: "https://www.twitch.tv/doughminationgaming" },
     reddit: { label: "Reddit", sub: "u/XerinDotZero", url: "https://www.reddit.com/user/XerinDotZero/" },
     youtube: { label: "YouTube", sub: "@CloveTwiGaming", url: "https://www.youtube.com/@CloveTwiGaming", aliases: ["yt"] },
@@ -45,9 +45,13 @@
   // Edit these freely. `desc` is the sentence shown by `whois`; add a `url`
   // (+ optional `urlLabel`) to attach a clickable link.
   const FRIENDS = {
-    ari: { name: "Ari", desc: "my girlfriend 💜 — the best. her corner of the web:", url: "https://REPLACE-with-aris-site.example", urlLabel: "ari's site" },
-    camilla: { name: "Camilla", desc: "a close friend. (add a blurb + link here)", url: "" },
-    ria: { name: "Ria", desc: "a close friend. (add a blurb + link here)", url: "" }
+    ari: { name: "Ari", desc: "🩵 My wifey 🩵 the best 🩵 Her corner of the web:", url: "https://ariare.es", urlLabel: "ariare.es 🩵" },
+    saphie: { name: "Saphie", desc: "🩷 Cammy's partner, loves linguistics🩷", url: "" },
+    camilla: { name: "Camillia (Cammy)", desc: "🖤 Close friend who shares a passion for coding 🖤", url: "https://cammy-the-cat.com", urlLabel: "cammy-the-cat.com 🖤" },
+    ria: { name: "Ria", desc: "🤍 Close friend/platonic daughter who means a lot to me 🤍", url: "" },
+    lilly: { name: "Lilly (Lils)", desc: "💖 Pookie, really cool person 💖", url: "" },
+    primrose: { name: "Nimnose", desc: "💜 Lil's partner 💜", url: "" },
+    fin: { name: "Fin", desc: "💛 Ari's friend who is really nice and who I can be unfilered with 💛", url: "" }
   };
 
   let cache = null;
@@ -132,8 +136,8 @@
       const rows = [
         ["help", "show this list"],
         ["socials", "list all socials"],
-        ["<social>", "show a social & ask to open it (append -open to do directly)"],
-        ["<social> -open", "open a social straight away"],
+        ["<social> [-open]", "show a social & ask to open it (append -open to do directly)"],
+        ["system [person]", "open my system website (append a person's name to open their page)"]
         ["friends", "people I know"],
         ["whois <name>", "details about a friend (e.g. ari)"],
         ["about", "a little about me"],
@@ -149,6 +153,7 @@
         ["help", "show this list"],
         ["socials", "list all socials"],
         ["<social>", "show a social & ask to open it (append -open to do directly)"],
+        ["system [person]", "open my system website (append a person's name to open their page)"]
         ["friends", "people I know"],
         ["whois <name>", "details about a friend (e.g. ari)"],
         ["about", "a little about me"],
@@ -158,6 +163,36 @@
       out += rows.map((r) => "  " + r[0].padEnd(12) + r[1]).join("\n");
       out += "\n\nTip: type a social's name (try 'socials') to open it.";
       return { text: out };
+    },
+    system_site(args) {
+      const who = (args[0] || "").toLowerCase();
+      if (!who) {
+        window.open("https://system.doughmination.co.uk/", "_blank");
+        return { text: "Opening system site..." };
+      }
+
+      try {
+        const response = await fetch(
+          `https://system.doughmination.co.uk/api/member/${encodeURIComponent(who)}`
+        );
+
+        if (response.status === 200) {
+          window.open(`https://system.doughmination.co.uk/member/${encodeURIComponent(who)}`, "_blank");
+          return { text: `Opening ${who}'s profile...` };
+        }
+
+        if (response.status === 404) {
+          return { text: "That person doesn't exist." };
+        }
+
+        if (response.status === 502) {
+          return { text: "The server is currently having issues." };
+        }
+
+        return { text: `Unexpected response (${response.status}).` };
+      } catch (error) {
+        return { text: "Failed to contact the server." };
+      }
     },
     socials() {
       const items = Object.keys(SOCIALS)
@@ -173,9 +208,9 @@
           "Clove Twilight — fae/faer\n" +
           "Transfem developer from Southampton, UK. I make Discord bots,\n" +
           "personal-site nonsense, and run a small corner of the internet\n" +
-          "under 'doughmination'. Big on Linux, Catppuccin, and cats.\n\n" +
+          "under the trade mark 'doughmination'. Big on Linux, Catppuccin, and cats.\n\n" +
           "This site is the beta playground for clove.is-a.dev — expect things\n" +
-          "to break in fun ways. Type 'socials' to find me elsewhere."
+          "to break in funny ways. Type 'socials' to find me elsewhere."
       };
     },
     friends() {
