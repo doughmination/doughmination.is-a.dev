@@ -15,6 +15,7 @@
     10. Secret cat modes        (toast + picker modal)
     11. Discord bots page
     12. Responsive overrides
+    13. Friends Page
    ============================================================ */
 
 @import url(/css/fonts.css);
@@ -1732,8 +1733,76 @@ body.term-chrome-in .button-wall { transform: translateX(-50%); }
 }
 .hf-info { margin: 0; white-space: pre; }
 
+/* ============================================================
+   13. Friends Page
+   ============================================================ */
 
-/* ---- terminal: whois card ---- */
-.t-whois { display: flex; flex-direction: column; gap: 0.3rem; }
-.t-whois-name { font-size: 0.92rem; }
+body:has(.friend-grid) .hub-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+}
 
+.friend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 96px);
+  justify-content: center;
+  gap: 3rem 1.5rem;
+  max-width: 560px;
+}
+
+.friend {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 96px;
+  height: auto;
+
+  color: var(--text);
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.friend-name {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--subtext-0);
+  text-align: center;
+}
+
+.friend-name.wife::before {
+  content: "🖤 ";
+}
+
+.friend-name.close::before {
+  content: "🤍 ";
+}
+
+.friend-pfp {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--yellow);
+  box-shadow: 0 4px 18px rgba(var(--accent-rgb), 0.25);
+}
+
+.friend-pfp.wife {
+  border: 3px solid var(--lavender);
+}
+
+.friend-pfp.close {
+  border: 3px solid var(--red);
+}
+
+.friend:hover {
+  transform: translateY(-3px);
+}
+
+.friend:hover .friend-pfp {
+  filter: none;
+}

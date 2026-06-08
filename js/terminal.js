@@ -12,13 +12,12 @@
 
   // ---- socials (keyword -> destination) ----------------------------------
   const SOCIALS = {
-    github: { label: "GitHub", sub: "@doughmination", url: "https://github.com/doughmination" },
-    gitgay: { label: "Git.Gay", sub: "@doughmination", url: "https://git.gay/doughmination", aliases: ["git.gay", "gitea"] },
+    gitgay: { label: "Git.Gay", sub: "@doughmination", url: "https://git.gay/doughmination", aliases: ["git.gay", "gitea", "github", "git"] },
     twitter: { label: "Twitter", sub: "@DoughminCEO", url: "https://x.com/DoughminCEO", aliases: ["x"] },
     bluesky: { label: "Bluesky", sub: "@doughmination.win", url: "https://bsky.app/profile/doughmination.win", aliases: ["bsky"] },
     linkedin: { label: "LinkedIn", sub: "Clove Twilight", url: "https://www.linkedin.com/in/estrogen/" },
     spotify: { label: "Spotify", sub: "doughmination", url: "https://open.spotify.com/user/x060f5w4ftwv8zc8fi9662t70" },
-    discord: { label: "Discord", sub: "Doughmination", url: "https://discord.com/" },
+    discord: { label: "Discord", sub: "Doughmination", url: "https://discord.com/users/1464890289922641993" },
     twitch: { label: "Twitch", sub: "@doughminationgaming", url: "https://www.twitch.tv/doughminationgaming" },
     reddit: { label: "Reddit", sub: "u/XerinDotZero", url: "https://www.reddit.com/user/XerinDotZero/" },
     youtube: { label: "YouTube", sub: "@CloveTwiGaming", url: "https://www.youtube.com/@CloveTwiGaming", aliases: ["yt"] },
@@ -106,10 +105,9 @@
     '<pre class="t-boot" id="t-boot" aria-hidden="true"></pre>' +
     '<div class="t-main" id="t-main" hidden>' +
     '<pre class="t-banner">' + esc(BANNER) + "</pre>" +
-    '<div class="t-greet">Hi! I\'m <b>Clove</b> <span class="t-dim">(fae/faer)</span>. ' +
-    "Type <b>help</b> for commands, or <b>socials</b> to browse.</div>" +
+    '<div class="t-greet">Type <b>help</b> for commands, or <b>socials</b> to browse.</div>' +
     '<div class="t-inputline">' +
-    '<span class="t-prompt">clove@doughmination<span class="t-path">:~$</span></span>' +
+    '<span class="t-prompt">arch@arch<span class="t-path">:[~]$</span></span>' +
     '<input class="t-input" id="t-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">' +
     "</div>" +
     '<div class="t-output" id="t-output"></div>' +
@@ -136,8 +134,6 @@
         ["socials", "list all socials"],
         ["<social> [-open]", "show a social & ask to open it (append -open to do directly)"],
         ["system [person]", "open my system website (append a person's name to open their page)"],
-        ["friends", "people I know"],
-        ["whois <name>", "details about a friend (e.g. ari)"],
         ["about", "a little about me"],
         ["hyfetch", "system info, with flair"]
       ];
@@ -152,8 +148,6 @@
         ["socials", "list all socials"],
         ["<social>", "show a social & ask to open it (append -open to do directly)"],
         ["system [person]", "open my system website (append a person's name to open their page)"],
-        ["friends", "people I know"],
-        ["whois <name>", "details about a friend (e.g. ari)"],
         ["about", "a little about me"],
         ["hyfetch", "system info, with flair"]
       ];
@@ -206,42 +200,19 @@
           "to break in funny ways. Type 'socials' to find me elsewhere."
       };
     },
-    friends() {
-      const items = Object.keys(FRIENDS)
-        .map((k) => '<span class="t-ls-item">' + esc(k) + "</span>").join("");
-      return {
-        html: '<div class="t-ls">' + items + "</div>" +
-          '<div class="t-dim t-ls-foot">run <b>whois &lt;name&gt;</b> for details</div>'
-      };
-    },
-    whois(args) {
-      const who = (args[0] || "").toLowerCase();
-      if (!who) return { text: "usage: whois <name>  —  try 'friends' for the list." };
-      const f = FRIENDS[who];
-      if (!f) return { text: "whois: no record of '" + who + "'.\ntype 'friends' to see who I know.", error: true };
-      let html = '<div class="t-whois">' +
-        '<div class="t-whois-name"><b class="t-accent">' + esc(f.name) + "</b></div>" +
-        "<div>" + esc(f.desc || "");
-      if (f.url) {
-        html += ' <a class="t-sc-url" href="' + esc(f.url) + '" target="_blank" rel="noopener">' +
-          esc(f.urlLabel || f.url) + "</a>";
-      }
-      html += "</div></div>";
-      return { html: html };
-    },
     hyfetch() {
-      const flavor = document.documentElement.getAttribute("data-flavor") || "mocha";
       const info = [
-        '<b class="t-accent">clove</b>@<b class="t-accent">doughmination</b>',
+        '<b class="t-accent">arch</b>@<b class="t-accent">arch</b>',
         "-----------------------",
-        "OS........ Arch Linux (btw)",
-        "Host...... doughmination.is-a.dev",
-        "Kernel.... catppuccin-" + flavor,
-        "Shell..... clovesh 1.0",
-        "Theme..... " + flavor.charAt(0).toUpperCase() + flavor.slice(1),
+        "OS........ Arch Linux x86_64",
+        "GPU....... AMD ATI SPEEDSTER MERC 310 RX 7900 XTX",
+        "CPU....... AMD Ryzen 9 9950X3D (8) @ 5.7GHz",
+        "Host...... B850M AORUS ELITE WIFI6E ICE -CF-WCP-ADO",
+        "Kernel.... 7.0.11-arch1-1",
+        "Shell..... bash 5.3.12",
+        "Theme..... Breeze-Dark [GTK2/3]",
         "Pronouns.. fae/faer",
         "Uptime.... " + uptime(),
-        "Cats...... too many"
       ].join("\n");
 
       if (!archLines || !archLines.length) {
@@ -388,7 +359,7 @@
   }
 
   // ---- tab-complete + history --------------------------------------------
-  const COMPLETIONS = Object.keys(COMMANDS).concat(["open", "socials", "isadotdev"], Object.keys(SOCIALS), Object.keys(ALIASES), Object.keys(FRIENDS));
+  const COMPLETIONS = Object.keys(COMMANDS).concat(["open", "socials", "isadotdev"], Object.keys(SOCIALS), Object.keys(ALIASES));
   function complete(prefix) {
     if (!prefix) return null;
     const hits = COMPLETIONS.filter((c) => c.indexOf(prefix) === 0);
