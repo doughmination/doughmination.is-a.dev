@@ -969,6 +969,24 @@ body:has(.bot-grid) .hub-header {
   margin-bottom: 0.25rem;
 }
 
+/* FIX: bot-grid and friend-grid pages need scrolling — was missing */
+html:has(.bot-grid),
+html:has(.friend-grid) {
+  height: auto;
+  min-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+body:has(.bot-grid),
+body:has(.friend-grid) {
+  height: auto;
+  min-height: 100dvh;
+  align-items: flex-start;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
 .section {
   position: relative;
   z-index: 1;
@@ -1139,7 +1157,9 @@ body:has(.bot-grid) .hub-header {
 
   body,
   body:has(.dev-info),
-  body:has(.changelog) {
+  body:has(.changelog),
+  body:has(.bot-grid),
+  body:has(.friend-grid) {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
@@ -1163,10 +1183,20 @@ body:has(.bot-grid) .hub-header {
     width: 100%;
   }
 
+  /* FIX: the presence card injected by now-playing.js replaces #now-playing
+     with .presence-card (position:fixed by default in api.css). Inside
+     .topbar on mobile it must flow normally. */
+  .topbar .presence-card,
   .topbar .now-playing,
   .topbar .beta-bar {
     position: static;
     inset: auto;
+  }
+
+  /* FIX: presence-card max-width so it doesn't overflow narrow screens */
+  .topbar .presence-card {
+    max-width: min(100%, 320px);
+    width: 100%;
   }
 
   .now-playing {
@@ -1176,7 +1206,9 @@ body:has(.bot-grid) .hub-header {
   /* 2 — Main content */
   .hub,
   body:has(.dev-info) .hub,
-  body:has(.changelog) .hub {
+  body:has(.changelog) .hub,
+  body:has(.bot-grid) .hub,
+  body:has(.friend-grid) .hub {
     order: 2;
     width: 100%;
     max-width: 100%;
@@ -1217,17 +1249,90 @@ body:has(.bot-grid) .hub-header {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+    /* FIX: restore pointer-events on mobile so pokéball and badges are tappable */
+    pointer-events: auto;
+  }
+
+  /* FIX: hide tooltips on touch (they'd stick on tap) */
+  .link-card:hover .link-text,
+  .bot:hover .bot-link-text {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .hub-header {
     margin-bottom: 1.5rem;
   }
 
-  /* Keep the dev-info / changelog content from butting up against
-     the nav below it */
+  /* Keep the dev-info / changelog / bots / friends content from butting up
+     against the nav below it */
   .dev-info,
-  .changelog {
-    padding-bottom: 0;
+  .changelog,
+  .bot-grid,
+  .friend-grid {
+    padding-bottom: 1rem;
+  }
+
+  /* FIX: bot sections need a bit of breathing room */
+  .section + .section {
+    margin-top: 1.5rem;
+  }
+
+  /* FIX: narrow waka bar label column so bars aren't crushed */
+  .waka-bar-row {
+    grid-template-columns: 5rem 1fr auto;
+  }
+
+  /* FIX: terminal height — respect short landscape viewports */
+  .terminal {
+    width: 94vw;
+    max-height: clamp(300px, 65dvh, 70vh);
+  }
+
+  /* FIX: button-wall — static in mobile flow, centered */
+  .button-wall {
+    order: 5;
+    position: static;
+    transform: none;
+    margin: 0 auto;
+    max-width: 100%;
+  }
+
+  /* FIX: override the term-chrome-in transform that wins by source order
+     over the plain .button-wall rule above (same specificity, later in sheet) */
+  body.term-booting .button-wall,
+  body.term-chrome-in .button-wall {
+    transform: none;
+  }
+}
+
+/* Very narrow phones — squeeze waka bar name column further */
+@media (max-width: 380px) {
+  .waka-bar-row {
+    grid-template-columns: 4rem 1fr auto;
+    gap: 0.4rem;
+  }
+
+  .waka-bar-val {
+    font-size: 0.66rem;
+  }
+
+  .bot-grid,
+  .friend-grid {
+    gap: 1.5rem 1rem;
+  }
+
+  /* Shrink avatar grids slightly on very small screens */
+  .bot-pfp,
+  .friend-pfp {
+    width: 80px;
+    height: 80px;
+  }
+
+  .bot,
+  .friend {
+    width: 80px;
+    height: 80px;
   }
 }
 
@@ -1648,10 +1753,18 @@ body.term-chrome-in .button-wall {
 body.term-chrome-in .button-wall { transform: translateX(-50%); }
 
 @media (max-width: 640px) {
-  .terminal { width: 94vw; max-height: 70vh; }
-  .button-wall { position: static; transform: none; margin: 1rem auto 0; }
+  .terminal { width: 94vw; max-height: clamp(300px, 65dvh, 70vh); }
+
+  /* FIX: button-wall mobile — override both the base fixed position AND the
+     term-chrome-in rule (which is later in source order and wins by cascade) */
+  .button-wall,
   body.term-booting .button-wall,
-  body.term-chrome-in .button-wall { transform: none; }
+  body.term-chrome-in .button-wall {
+    position: static;
+    transform: none;
+    margin: 0 auto;
+    max-width: 100%;
+  }
 }
 
 

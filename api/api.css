@@ -530,3 +530,24 @@ a.pc-wl-item:hover { background: var(--mantle); }
   border-color: rgba(var(--pc-grad-1-rgb), 0.6);
 }
 .presence-card.has-profile-grad .pc-row { background: rgba(17, 17, 27, 0.55); }
+
+
+/* =====================================================================
+ * 4. MOBILE — in-flow card when hosted inside .topbar
+ *    The main site's flavors.js wraps #now-playing inside .topbar on
+ *    mobile. The card must flow normally there instead of sitting fixed.
+ *    These rules use !important to beat the base position:fixed above
+ *    (api.css is loaded after main.css, so equal-specificity rules here
+ *    would otherwise win — but !important guarantees the override even
+ *    if load order ever changes).
+ * ===================================================================== */
+@media (max-width: 640px) {
+  .topbar .presence-card {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100%;
+    max-width: min(100%, 320px);
+    margin: 0 auto;
+  }
+}
