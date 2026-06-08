@@ -2,3 +2,4 @@
 .DS_Store
 movecats.sh
 cat-generators/
+test-site.sh
