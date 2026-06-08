@@ -42,8 +42,6 @@
   }
 
   // ---- friends (keyword -> who they are) ---------------------------------
-  // Edit these freely. `desc` is the sentence shown by `whois`; add a `url`
-  // (+ optional `urlLabel`) to attach a clickable link.
   const FRIENDS = {
     ari: { name: "Ari", desc: "🩵 My wifey 🩵 the best 🩵 Her corner of the web:", url: "https://ariare.es", urlLabel: "ariare.es 🩵" },
     saphie: { name: "Saphie", desc: "🩷 Cammy's partner, loves linguistics🩷", url: "" },
@@ -69,7 +67,7 @@
     fetch("/arch.ascii").then(function (r) { return r.ok ? r.text() : ""; }).then(function (t) {
       if (!t) return;
       var lines = t.replace(/\r/g, "").split("\n");
-      if (lines[0] && lines[0].trim().charAt(0) === "{") lines.shift(); // drop hyfetch json header
+      if (lines[0] && lines[0].trim().charAt(0) === "{") lines.shift();
       lines = lines.map(function (l) { return l.replace(/\$\{c\d\}/g, ""); });
       while (lines.length && lines[lines.length - 1].trim() === "") lines.pop();
       archLines = lines;
@@ -137,7 +135,7 @@
         ["help", "show this list"],
         ["socials", "list all socials"],
         ["<social> [-open]", "show a social & ask to open it (append -open to do directly)"],
-        ["system [person]", "open my system website (append a person's name to open their page)"]
+        ["system [person]", "open my system website (append a person's name to open their page)"],
         ["friends", "people I know"],
         ["whois <name>", "details about a friend (e.g. ari)"],
         ["about", "a little about me"],
@@ -153,7 +151,7 @@
         ["help", "show this list"],
         ["socials", "list all socials"],
         ["<social>", "show a social & ask to open it (append -open to do directly)"],
-        ["system [person]", "open my system website (append a person's name to open their page)"]
+        ["system [person]", "open my system website (append a person's name to open their page)"],
         ["friends", "people I know"],
         ["whois <name>", "details about a friend (e.g. ari)"],
         ["about", "a little about me"],
@@ -164,31 +162,26 @@
       out += "\n\nTip: type a social's name (try 'socials') to open it.";
       return { text: out };
     },
-    system_site(args) {
+    async system(args) {
       const who = (args[0] || "").toLowerCase();
       if (!who) {
         window.open("https://system.doughmination.co.uk/", "_blank");
         return { text: "Opening system site..." };
       }
-
       try {
         const response = await fetch(
           `https://system.doughmination.co.uk/api/member/${encodeURIComponent(who)}`
         );
-
         if (response.status === 200) {
           window.open(`https://system.doughmination.co.uk/member/${encodeURIComponent(who)}`, "_blank");
           return { text: `Opening ${who}'s profile...` };
         }
-
         if (response.status === 404) {
           return { text: "That person doesn't exist." };
         }
-
         if (response.status === 502) {
           return { text: "The server is currently having issues." };
         }
-
         return { text: `Unexpected response (${response.status}).` };
       } catch (error) {
         return { text: "Failed to contact the server." };
@@ -251,8 +244,6 @@
         "Cats...... too many"
       ].join("\n");
 
-
-      // paint the arch logo in the trans flag, hyfetch-style
       if (!archLines || !archLines.length) {
         return { html: '<pre class="hf-info">' + info + "</pre>" };
       }
@@ -303,7 +294,6 @@
   let histIdx = -1;
   let pendingSocial = null;
 
-  // Single-output model: each command REPLACES whatever was on screen.
   function showResult(result) {
     output.innerHTML = "";
     if (!result) return;
@@ -316,8 +306,6 @@
     output.scrollTop = 0;
   }
 
-  // Runs a command handler that may be sync (returns a result) or async
-  // (returns a Promise of a result), and shows whatever it resolves to.
   function runCommand(fn, args) {
     let r;
     try { r = fn(args); }
@@ -331,7 +319,7 @@
 
   function run(raw) {
     const cmd = raw.trim();
-    output.innerHTML = "";          // clear the previous output first
+    output.innerHTML = "";
     if (!cmd) { pendingSocial = null; return; }
     history.push(cmd); histIdx = history.length;
 
@@ -340,14 +328,12 @@
     const flags = parts.slice(1).map((p) => p.toLowerCase());
     const wantsOpen = flags.indexOf("-open") >= 0 || flags.indexOf("--open") >= 0 || flags.indexOf("-o") >= 0;
 
-    // answering a pending "open it?" prompt
     if (pendingSocial) {
       if (["y", "yes", "open", "o"].indexOf(name) >= 0) { openSocial(pendingSocial); return; }
       if (["n", "no"].indexOf(name) >= 0) { pendingSocial = null; showResult({ text: "okay, leaving it closed." }); return; }
-      pendingSocial = null; // anything else: fall through to normal handling
+      pendingSocial = null;
     }
 
-    // "open <social>" or a bare social name
     const socialKey = resolveSocial(name === "open" ? flags[0] : name);
     if (socialKey) {
       if (wantsOpen || name === "open") openSocial(socialKey);
@@ -387,6 +373,7 @@
     if (ALIASES[key]) return ALIASES[key];
     return null;
   }
+
   function openSocial(key) {
     pendingSocial = null;
     const s = SOCIALS[key];
@@ -428,11 +415,11 @@
       if (c) input.value = c;
     }
   });
+
   function moveCaretEnd() {
     requestAnimationFrame(() => { input.selectionStart = input.selectionEnd = input.value.length; });
   }
 
-  // clicking anywhere on the terminal focuses the prompt (unless selecting text)
   root.addEventListener("click", () => {
     if ((window.getSelection() + "") === "") input.focus();
   });
@@ -464,13 +451,11 @@
     setTimeout(() => streamBoot(i + 1), 120 + Math.random() * 120);
   }
 
-  // let users skip the boot
   function skipHandler(e) {
     if (e.type === "keydown" || e.type === "click") finishBoot();
   }
   document.addEventListener("keydown", skipHandler, { once: false });
 
-  // kick things off; reveal side chrome almost immediately
   loadArt();
   requestAnimationFrame(() => document.body.classList.add("term-chrome-in"));
   streamBoot(0);
