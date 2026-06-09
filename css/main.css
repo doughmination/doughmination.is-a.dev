@@ -19,7 +19,11 @@
    ============================================================ */
 
 @import url(/css/fonts.css);
-
+@import url(/css/themes/frappe.css);
+@import url(/css/themes/latte.css);
+@import url(/css/themes/mocha.css);
+@import url(/css/themes/macchiato.css);
+@import url(/api/api.css);
 
 /* ============================================================
    1. BASE & RESET
